@@ -4,7 +4,13 @@
 
 namespace parser
 {
-
+#ifdef OS_LINUX
+void fopen_s(FILE **f, const char *name, const char *mode) {
+    *f = fopen(name, mode);
+    return;
+}
+#endif    
+    
 ParserHelper::ParserHelper()
 {
 	m_scanner = std::shared_ptr<CScanner>(new CScanner);
