@@ -1,0 +1,2 @@
+﻿C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(391,5): warning MSB8028: The intermediate directory (C:\Users\elen\Desktop\my_projects\3D_ic_modeling\etc\utils\..\..\bin\Debug\) contains files shared from another project (gui.vcxproj, main.vcxproj, QRibbon.vcxproj, rq_plugin.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+  parser.vcxproj -> C:\Users\elen\Desktop\my_projects\3D_ic_modeling\etc\utils\..\..\bin\x64\Debug\parser.dll

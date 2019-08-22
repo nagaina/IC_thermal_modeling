@@ -1,11 +1,9 @@
 #ifndef QRIBBON_BUTTON_HPP
 #define QRIBBON_BUTTON_HPP
 
-#include "qribbon_lib.hpp"
-
 #include <QToolButton>
 
-class QRIBBON_EXPORT QRibbonButton : public QToolButton
+class QRibbonButton : public QToolButton
 {
 	Q_OBJECT
 

@@ -1,7 +1,6 @@
 #ifndef Q_RIBBON_WIDGET_H
 #define Q_RIBBON_WIDGET_H
 
-#include "qribbon_lib.hpp"
 
 #include <QWidget>
 #include <QVector>
@@ -11,7 +10,7 @@ class QHBoxLayout;
 
 //	@class QRibbonWidget
 //	represents the widget in the one tab
-class QRIBBON_EXPORT QRibbonWidget : public QWidget
+class QRibbonWidget : public QWidget
 {
 	Q_OBJECT
 

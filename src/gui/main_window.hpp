@@ -5,7 +5,6 @@
 //
 // Includes
 //
-#include "gui.hpp"
 
 // Qt
 #include <QMainWindow>
@@ -17,7 +16,7 @@ class ApplicationRibbonGui;
 //
 // @class mainWindow 
 //
-class GUI_EXPORT MainWindow : public QMainWindow
+class MainWindow : public QMainWindow
 {
 	Q_OBJECT
 

@@ -1,8 +1,6 @@
 #ifndef Q_RIBBON_GROUP_H
 #define Q_RIBBON_GROUP_H
 
-#include "qribbon_lib.hpp"
-
 #include <QWidget>
 
 class QHBoxLayout;
@@ -10,7 +8,7 @@ class QLabel;
 class QGridLayout;
 class QRibbonButton;
 
-enum class QRIBBON_EXPORT QRibbonButtonSize
+enum class QRibbonButtonSize
 {
 	size16,
 	size24,
@@ -20,7 +18,7 @@ enum class QRIBBON_EXPORT QRibbonButtonSize
 
 //	@class QRibbonGroup
 //	reprents single button group in the widget
-class QRIBBON_EXPORT QRibbonGroup : public QWidget
+class QRibbonGroup : public QWidget
 {
 	Q_OBJECT
 

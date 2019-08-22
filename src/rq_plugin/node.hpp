@@ -1,7 +1,6 @@
 #ifndef node_hpp
 #define node_hpp
 
-#include "rq_plugin.hpp"
 #include "point.hpp"
 
 #include <memory>

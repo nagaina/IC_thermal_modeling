@@ -2,7 +2,6 @@
 #define PARSER_HELPER_HPP
 
 #include "ICnode.hpp"
-#include "parser_lib.hpp"
 #include "scanner.hpp"
 #include "parser.hpp"
 
@@ -11,7 +10,7 @@
 
 namespace parser
 {
-class PARSER_EXPORT ParserHelper
+class ParserHelper
 {
 public:
 	ParserHelper();

@@ -5,8 +5,6 @@
 //Includes
 //
 
-#include "parser_lib.hpp"
-
 #include <memory>
 
 namespace parser
@@ -16,7 +14,7 @@ namespace parser
 //	class ICNode
 //	implementation of the object representing IC coords	
 //
-class PARSER_EXPORT ICnode
+class ICnode
 {
 public:
 	//
