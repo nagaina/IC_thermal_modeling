@@ -33,6 +33,7 @@ endif (WIN32)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/.tmp/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/.tmp/lib)
 
+
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_PREFIX_PATH ${QTDIR})
 set(CMAKE_CXX_STANDARD 17)
@@ -50,13 +51,15 @@ include_directories(${QT_INCLUDE_DIR}/QtCore)
 include_directories(${QT_INCLUDE_DIR}/QtGui)
 include_directories(${QT_INCLUDE_DIR}/QtCore)
 include_directories(${QT_INCLUDE_DIR}/QtWidgets)
+include_directories("C:\\Programs\\eigen3\\")
 
 
 add_subdirectory (${PROJECT_SOURCE_DIR}/src/gui)
+add_subdirectory (${PROJECT_SOURCE_DIR}/src/core)
 add_subdirectory (${PROJECT_SOURCE_DIR}/src/parser)
 add_subdirectory (${PROJECT_SOURCE_DIR}/src/QRibbon)
 add_subdirectory (${PROJECT_SOURCE_DIR}/src/rq_plugin/)
 
 add_executable(thermoIC ${PROJECT_SOURCE_DIR}/src/main.cpp )
-add_dependencies(thermoIC gui parser QRibbon rq_plugin )
-target_link_libraries (thermoIC gui parser QRibbon rq_plugin Qt5::Widgets Qt5::Core Qt5::Gui ${LD_AUX})
+add_dependencies(thermoIC core gui parser QRibbon rq_plugin )
+target_link_libraries (thermoIC core gui parser QRibbon rq_plugin Qt5::Widgets Qt5::Core Qt5::Gui ${LD_AUX})

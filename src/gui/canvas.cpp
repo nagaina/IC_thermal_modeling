@@ -1,102 +1,175 @@
 #include "canvas.hpp"
 
-#include <parser_helper.hpp>
+#include <QGraphicsRectItem>
+#include <QGraphicsView>
+#include <QHBoxLayout>
+#include <QtMath>
+
+static const int POWER = 0;
+
+inline qreal round(qreal val, int step)
+{
+	int tmp = int(val) + step / 2;
+	tmp -= tmp % step;
+	return qreal(tmp);
+}
+
+class scene : public QGraphicsScene
+{
+public:
+	void show_grid(bool b)
+	{
+		m_show_grid = b;
+		update();
+	}
+public:
+	void set_grid_size(int s)
+	{
+		m_grid_step = s;
+		update();
+	}
+
+public:
+	int get_grid_size() const
+	{
+		return m_grid_step;
+	}
+
+protected:
+	void drawForeground(QPainter *painter, const QRectF &rect) override
+	{
+		if (!m_show_grid)
+		{
+			return;
+		}
+		/*QRectF r = rect;
+		painter->setRenderHint(QPainter::Antialiasing, true);
+		painter->setPen(QPen(Qt::white,Qt::SolidLine));
+		int max_X = r.width();
+		int max_y = r.height();
+		qDebug()<<r;
+		for(int i = r.x() + cells_window::s_grid_step; i< max_X ; i += cells_window::s_grid_step) {
+			painter->drawLine(QPointF(r.y() + cells_window::s_grid_step, i), QPointF(max_y, i));
+		}
+		for(int j = r.y() + cells_window::s_grid_step; j< max_y; j += cells_window::s_grid_step) {
+			painter->drawLine(QPointF(j, r.x() + cells_window::s_grid_step), QPointF(j, max_X));
+		}*/
+		int step = m_grid_step;
+		painter->setPen(QPen(QColor(Qt::white)));
+
+		// draw horizontal grid.
+		qreal start = round(rect.top(), step);
+		if (start > rect.top())
+		{
+			start -= step;
+		}
+
+		for (qreal y = start - step; y < rect.bottom();)
+		{
+			y += step;
+			painter->drawLine(rect.left(), y, rect.right(), y);
+		}
+
+		// Draw vertical grid.
+		start = round(rect.left(), step);
+		if (start > rect.left())
+		{
+			start -= step;
+		}
+
+		for (qreal x = start - step; x < rect.right();)
+		{
+			x += step;
+			painter->drawLine(x, rect.top(), x, rect.bottom());
+		}
+	}
+
+private:
+	bool m_show_grid = false;
+	int m_grid_step = 1;
+};
+
 
 Canvas::Canvas(QWidget* p)
 	: QWidget(p)
 {
 	setFocusPolicy(Qt::StrongFocus);
 	setObjectName("Canvas");
+	QHBoxLayout* l = new QHBoxLayout();
+	m_scene = new scene;
+	m_view = new QGraphicsView(m_scene);
+	l->addWidget(m_view);
+	setLayout(l);
+	m_view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+	m_view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+	//    m_view->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
-	m_renderer = new QPainter(this);
-}
-
-void Canvas::paintEvent(QPaintEvent* event)
-{
-	m_renderer->begin(this);
-
-	// draw the black canvas
-	QRect blackHole(QPoint(0, 0), size());
-	QBrush blackBrush(Qt::black);
-	m_renderer->setBrush(blackBrush);
-	m_renderer->drawRect(blackHole);
-
-	// draw the grid
-	QPen whitePen(Qt::white);
-	whitePen.setWidth(3);
-	whitePen.setCapStyle(Qt::RoundCap);
-	m_renderer->setPen(whitePen);
-	int _height = height();
-	int _width = width();
-	for (int i = 0; i < _width; i += m_scale)
-		for (int j = 0; j < _height; j += m_scale)
-			m_renderer->drawPoint(i, j);
-
-	// vor keteery nkarven :D
-	// draw the rq tree
-	if (!m_rq_plugin.empty())
-	{
-		QPen yellowPen(Qt::yellow);
-		yellowPen.setWidth(3);
-		yellowPen.setCapStyle(Qt::RoundCap);
-		m_renderer->setPen(yellowPen);
-		for (auto point : m_points)
-		{
-			std::vector<rq::CPoint<int>> nearests = m_rq_plugin.nearest_points(point);
-			for (auto i : nearests)
-				m_renderer->drawLine(QPoint(point.x(), point.y()), QPoint(i.x(), i.y()));
-		}
-	}
-
-	// draw the points parsed from the file
-	QPen redPen(Qt::red);
-	redPen.setWidth(7);
-	redPen.setCapStyle(Qt::RoundCap);
-	m_renderer->setPen(redPen);
-	for (auto point : m_points)
-		m_renderer->drawPoint(point.x(), point.y());
-
-	m_renderer->end();
+	//    m_view->setBackgroundBrush(QBrush(QColor(240,240,240,82)/*, Qt::Dense1Pattern)*/));
+	m_view->setBackgroundBrush(QBrush(Qt::black));
+	//m_view->show();
 }
 
 void Canvas::mapPointToScale()
 {
-	for (auto& point : m_points)
+}
+
+void Canvas::onCalculate()
+{
+}
+
+void Canvas::onLoadFile(const QString& file)
+{
+	parser::ParserHelper parser;
+	m_cells = parser.parseFile(file.toStdString());
+
+	//	Draw
+	double maxPow = 0;
+	foreach(auto i, m_cells)
 	{
-		point.setX(point.x() * m_scale);
-		point.setY(point.y() * m_scale);
+		if (maxPow < i->P())
+			maxPow = i->P();
 	}
-}
+	assert(maxPow != 0);
 
-void Canvas::calculate()
-{
-	rq::RQtree<int> newTree(m_points);
-	m_rq_plugin = newTree;
-	update();
-}
-
-void Canvas::loadFile(const QString& file)
-{
-	parser::ParserHelper p;
-
-	std::vector<parser::ICnodePtr>  output = p.parseFile(file.toStdString());
-
-	std::vector<rq::CPoint<int>> points;
-
-	for (auto i : output)
+	foreach(auto i, m_cells)
 	{
-		points.push_back(rq::CPoint<int>(i->X(), i->Y()));
+		QRectF r(QPoint(i->X() * 15, i->Y() * 15),
+				 QSize(qreal(i->W() * 15), qreal(i->H() * 15)));
+		QPen pen;
+		pen.setStyle(Qt::SolidLine);
+		pen.setWidth(2);
+		pen.setColor(QColor(Qt::white));
+		QColor color;
+		qreal h = i->P() / maxPow * 256;
+		color.setHsl(256 - h, 240, 140);
+		QBrush br(color);
+		QGraphicsRectItem* ri = m_scene->addRect(r, pen, br); // TODO add QPen and QBrush
+/*        QGraphicsItem* ti = m_scene->addText(QString::fromStdString(i.name()), QFont("Times", 30));
+		ti->setPos(r.center());*/
+		ri->setToolTip(QString::number(i->X()));
+		ri->setData(POWER, i->P());
+		//ri->setData(FREQUENCY, i.frequency());
+		ri->setFlags(QGraphicsItem::ItemIsMovable |
+					 QGraphicsItem::ItemIsSelectable |
+					 QGraphicsItem::ItemSendsGeometryChanges |
+					 QGraphicsItem::ItemSendsScenePositionChanges);
 	}
+	assert(m_scene != 0);
+	assert(m_view != 0);
+	QRectF br = m_scene->itemsBoundingRect();
 
-	m_points = points;
-	mapPointToScale();
+	QRectF sr = m_view->contentsRect();
+	qreal blength = br.width() < br.height() ? br.height() : br.width();
+	qreal length = sr.width() < sr.height() ? sr.height() : sr.width();
+	qreal length_factor = length / (blength*1.5);
+
+	m_view->scale(length_factor, length_factor);
+	m_view->setAlignment(Qt::AlignCenter);
+	m_view->centerOn(br.center().x(), br.center().y());
+	m_scene->setSceneRect(br);
 }
 
-void Canvas::clear()
+void Canvas::onClear()
 {
-	m_points.clear();
-	rq::RQtree<int> newTree(m_points);
-	m_rq_plugin = newTree;
 	update();
-
 }

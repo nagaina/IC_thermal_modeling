@@ -21,6 +21,21 @@ void ICnode::setW(double w)
 	m_W = w;
 }
 
+void ICnode::setH(double h)
+{
+	m_H = h;
+}
+
+void ICnode::setP(double w)
+{
+	m_P = w;
+}
+
+void ICnode::setL(double l)
+{
+	m_L = l;
+}
+
 double ICnode::X() const
 {
 	return m_X;
@@ -34,5 +49,20 @@ double ICnode::Y() const
 double ICnode::W() const
 {
 	return m_W;
+}
+
+double ICnode::P() const
+{
+	return m_P;
+}
+
+double ICnode::H() const
+{
+	return m_H;
+}
+
+double ICnode::L() const
+{
+	return m_L;
 }
 }

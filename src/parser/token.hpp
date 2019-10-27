@@ -12,9 +12,12 @@ namespace parser
 //
 enum ETokenType
 {
-	_X, _Y,
-	_W,
 	_NUMBER,
+	_X, _Y,
+	_WIDTH,
+	_HEIGHT,
+	_POWER,
+	_LAYER,
 	_DELIMITER, // :
 	_EOF
 };

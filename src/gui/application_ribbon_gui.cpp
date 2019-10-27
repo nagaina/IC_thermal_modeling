@@ -8,15 +8,12 @@
 #include <qribbonwidget.hpp>
 #include <qribbonbutton.hpp>
 
-#include <QVBoxLayout>
 #include <QHBoxLayout>
-#include <QRadioButton>
-#include <QPushButton>
-#include <QGroupBox>
 #include <QLayout>
 #include <QSignalMapper>
 #include <QLabel>
 #include <QComboBox>
+#include <QSpinBox>
 #include <QFileDialog>
 
 const QSize globalSize(22, 22);
@@ -39,8 +36,8 @@ ApplicationRibbonGui::ApplicationRibbonGui(QWidget* p)
 	QRibbon* ribbon = new QRibbon(this);
 	ribbon->addTab(ribbonWidget, "Home");
 
-	QRibbonWidget* ribbonWidgetTemp = new QRibbonWidget(this);
-	ribbon->addTab(ribbonWidgetTemp, "Other");
+	//QRibbonWidget* ribbonWidgetTemp = new QRibbonWidget(this);
+	//ribbon->addTab(ribbonWidgetTemp, "Other");
 
 	QVBoxLayout* layout = new QVBoxLayout;
 	layout->addWidget(ribbon);
@@ -53,6 +50,7 @@ ApplicationRibbonGui::ApplicationRibbonGui(QWidget* p)
 
 void ApplicationRibbonGui::buildHomePage(QRibbonWidget* ribbonWidget)
 {
+	//	Design
 	QRibbonGroup* group = new QRibbonGroup(this);
 	group->setTitle("Design");
 
@@ -60,12 +58,41 @@ void ApplicationRibbonGui::buildHomePage(QRibbonWidget* ribbonWidget)
 	connect(open, SIGNAL(clicked()), this, SLOT(openFileDialog()));
 	QRibbonButton* calculate = new QRibbonButton(this, "Calculate", getIconDir() + "calculate.svg");
 	connect(calculate, SIGNAL(clicked()), this, SIGNAL(calculate()));
-	QRibbonButton* clear = new QRibbonButton(this, "Clear", getIconDir() + "close.svg");
+	QRibbonButton* load = new QRibbonButton(this, "Load", getIconDir() + "upload.svg");
+	//connect(load, SIGNAL(clicked()), this, SIGNAL(calculate()));
+	QRibbonButton* clear = new QRibbonButton(this, "Clear", getIconDir() + "delete.svg");
 	connect(clear, SIGNAL(clicked()), this, SIGNAL(clear()));
 	group->addRibbonButton(open);
 	group->addRibbonButton(calculate);
+	group->addRibbonButton(load);
 	group->addRibbonButton(clear);
 	ribbonWidget->addGroup(group);
+
+	//	Selection
+	QRibbonGroup* groupSelection = new QRibbonGroup(this);
+	groupSelection->setTitle("Selection");
+
+	QRibbonButton* point = new QRibbonButton(this, "Point", getIconDir() + "mouse.svg");
+	QRibbonButton* region = new QRibbonButton(this, "Region", getIconDir() + "selection.svg");
+	groupSelection->addRibbonButton(point);
+	groupSelection->addRibbonButton(region);
+	ribbonWidget->addGroup(groupSelection);
+
+	//	Options
+	QWidget* pW = new QWidget(this);
+	QLabel* label =  new QLabel("Power :", pW);
+	QSpinBox* box = new QSpinBox(pW);
+	QHBoxLayout* lay = new QHBoxLayout;
+	lay->addWidget(label);
+	lay->addWidget(box);
+	pW->setLayout(lay);
+
+	QRibbonGroup* groupConstraint = new QRibbonGroup(this);
+	groupConstraint->setTitle("Constraint");
+
+	groupConstraint->addButton(pW);
+	ribbonWidget->addGroup(groupConstraint);
+	ribbonWidget->addStretch(10);
 }
 
 void ApplicationRibbonGui::openFileDialog()

@@ -1,37 +1,36 @@
 #ifndef CANVAS_HPP
 #define CANVAS_HPP
 
+#include <parser_helper.hpp>
+
 #include <QWidget>
-#include <QPainter>
 
-#include <vector>
+class QGraphicsView;
+class QGraphicsScene;
 
-#include <point.hpp>
-#include <RQtree.hpp>
-
-class Canvas : public QWidget
+class Canvas final : public QWidget
 {
 	Q_OBJECT
 
 public:
-	Canvas(QWidget* p = 0);
+	explicit Canvas(QWidget* p = nullptr);
 
 public:
-	virtual void paintEvent(QPaintEvent*) override;
-
+	
 public slots:
-	void calculate();
-	void loadFile(const QString&);
-	void clear();
+	void onCalculate();
+	void onLoadFile(const QString&);
+	void onClear();
 
 private:
 	void mapPointToScale();
 
 private:
-	QPainter* m_renderer = nullptr;
-	int m_scale = 20;
-	std::vector<rq::CPoint<int>> m_points;
-	rq::RQtree<int> m_rq_plugin;
+	QGraphicsView*					m_view = nullptr;
+	QGraphicsScene*					m_scene = nullptr;
+	unsigned						m_id = 0;
+	int								m_size = 1;
+	std::vector<parser::ICnodePtr>	m_cells;
 };
 
 #endif

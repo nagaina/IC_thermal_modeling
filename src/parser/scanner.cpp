@@ -47,7 +47,19 @@ void CScanner::scanToken()
 		break;
 	case 'w':
 	case 'W':
-		addToken(_W);
+		addToken(_WIDTH);
+		break;
+	case 'h':
+	case 'H':
+		addToken(_HEIGHT);
+		break;
+	case 'p':
+	case 'P':
+		addToken(_POWER);
+		break;
+	case 'l':
+	case 'L':
+		addToken(_LAYER);
 		break;
 	case ':':
 		addToken(_DELIMITER);

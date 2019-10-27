@@ -7,7 +7,7 @@
 //define default value, but also give way to override from compiler options.
 #ifndef ICONPATH
     #ifdef Q_OS_WIN
-        #define ICONPATH "C:\\Users\\elen\\Desktop\\my_projects\\3D_ic_modeling\\etc\\icons\\"
+        #define ICONPATH qApp->applicationDirPath() + "\\..\\..\\etc\\icons\\"
     #else
         //(in linux)
         #define ICONPATH qApp->applicationDirPath()+"/../../etc/icons/"

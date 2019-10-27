@@ -79,7 +79,7 @@ ICnodePtr CParser::_parse()  const
 		}
 	}
 
-	if (match(_W) && match(_DELIMITER))
+	if (match(_WIDTH) && match(_DELIMITER))
 	{
 		if (check(_NUMBER))
 		{
@@ -88,6 +88,32 @@ ICnodePtr CParser::_parse()  const
 		}
 	}
 
+	if (match(_HEIGHT) && match(_DELIMITER))
+	{
+		if (check(_NUMBER))
+		{
+			newNode->setH(atof(peek().m_lexeme.c_str()));
+			advance();
+		}
+	}
+
+	if (match(_POWER) && match(_DELIMITER))
+	{
+		if (check(_NUMBER))
+		{
+			newNode->setP(atof(peek().m_lexeme.c_str()));
+			advance();
+		}
+	}
+
+	if (match(_LAYER) && match(_DELIMITER))
+	{
+		if (check(_NUMBER))
+		{
+			newNode->setL(atof(peek().m_lexeme.c_str()));
+			advance();
+		}
+	}
 	return newNode;
 }
 }
