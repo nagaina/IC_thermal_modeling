@@ -19,7 +19,8 @@ namespace parser
 class CScanner
 {
 public:
-	CScanner() : m_line(1) {}
+	CScanner() : 
+		m_line(1) {}
 
 	std::vector<Token> scanTokens(const std::string&);
 
@@ -31,6 +32,7 @@ private:
 	void addToken(ETokenType);
 	char peek() const;
 	char peekNext() const;
+	void identifier();
 
 private:
 	size_t m_line;

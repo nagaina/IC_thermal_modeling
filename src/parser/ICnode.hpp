@@ -6,6 +6,7 @@
 //
 
 #include <memory>
+#include <string>
 
 namespace parser
 {
@@ -25,17 +26,19 @@ public:
 
 	void setX(double x);
 	void setY(double y);
-	void setW(double W);
-	void setH(double H);
-	void setP(double P);
-	void setL(double L);
+	void setWidth(double W);
+	void setHeight(double H);
+	void setPower(double P);
+	void setLayer(double L);
+	void setName(const std::string& name);
 
 	double X() const;
 	double Y() const;
-	double W() const;
-	double P() const;
-	double H() const;
-	double L() const;
+	double Width() const;
+	double Power() const;
+	double Height() const;
+	double Layer() const;
+	std::string Name() const;
 
 private:
 	double m_X;
@@ -44,6 +47,7 @@ private:
 	double m_H;
 	double m_P;
 	double m_L;
+	std::string m_name;
 };
 
 using ICnodePtr = std::shared_ptr<ICnode>;

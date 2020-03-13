@@ -1,0 +1,8 @@
+name=1; x = 1; y = 1; height =19; width=2; power=0.5; layer=0;
+name=2; x = 22; y = 11;	height =9; width=2; power=0.32; layer=0;
+name=3; x = 5; y = 1;	height =1; width=6; power=0.25; layer=0;
+name=4; x = 4; y = 3; width=3; height =1; power=0.65; layer=0;
+name=5; x = 8; y = 3; height =1; name=5; 	 width=3;  power=0.2; layer=0;
+name=6; x = 4; y = 5; power=0.2; width=4; height =1; layer=0;
+name=7; x = 9, y = 5; width=3; height =2; power=0.42; layer=0;
+name=8; x = 4, y = 7; width=1.5; height =1.5; power=0.32; layer=0;

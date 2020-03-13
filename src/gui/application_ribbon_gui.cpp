@@ -82,6 +82,8 @@ void ApplicationRibbonGui::buildHomePage(QRibbonWidget* ribbonWidget)
 	QWidget* pW = new QWidget(this);
 	QLabel* label =  new QLabel("Power :", pW);
 	QSpinBox* box = new QSpinBox(pW);
+	box->setMaximum(100000);
+	connect(box, SIGNAL(valueChanged(int)), this, SIGNAL(depthChange(int)));
 	QHBoxLayout* lay = new QHBoxLayout;
 	lay->addWidget(label);
 	lay->addWidget(box);

@@ -35,7 +35,9 @@ void CScanner::scanToken()
 	{
 	case ' ':
 	case '\t':
+		break;
 	case '\n':
+		addToken(_EOL);
 		break;
 	case 'x' :
 	case 'X' :
@@ -45,30 +47,18 @@ void CScanner::scanToken()
 	case 'Y' :
 		addToken(_Y);
 		break;
-	case 'w':
-	case 'W':
-		addToken(_WIDTH);
-		break;
-	case 'h':
-	case 'H':
-		addToken(_HEIGHT);
-		break;
-	case 'p':
-	case 'P':
-		addToken(_POWER);
-		break;
-	case 'l':
-	case 'L':
-		addToken(_LAYER);
-		break;
 	case ':':
+	case '=' :
+	case ';' :
+	case ',' :
 		addToken(_DELIMITER);
 		break;
 	default:
 		if (isdigit(c))
-		{
 			number();
-		} 
+		else 
+			if (isalpha(c))
+				identifier();
 		else
 		{
 			// Throw error;
@@ -113,5 +103,23 @@ void CScanner::addToken(ETokenType type)
 {
 	std::string text(m_source.substr(m_start, m_current - m_start));
 	m_tokens.push_back(Token(m_line, type, text));
+}
+
+void CScanner::identifier()
+{
+	while (isalnum(peek())) advance();
+	std::string text = m_source.substr(m_start, m_current - m_start);
+	if (text == "layer")
+		addToken(_LAYER);
+	else if (text == "width")
+		addToken(_WIDTH);
+	else if (text == "name")
+		addToken(_NAME);
+	else if (text == "height")
+		addToken(_HEIGHT);
+	else if (text == "power")
+		addToken(_POWER);
+	else
+		addToken(_STRING);
 }
 }

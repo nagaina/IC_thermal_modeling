@@ -16,22 +16,22 @@ void ICnode::setY(double y)
 	m_Y = y;
 }
 
-void ICnode::setW(double w)
+void ICnode::setWidth(double w)
 {
 	m_W = w;
 }
 
-void ICnode::setH(double h)
+void ICnode::setHeight(double h)
 {
 	m_H = h;
 }
 
-void ICnode::setP(double w)
+void ICnode::setPower(double w)
 {
 	m_P = w;
 }
 
-void ICnode::setL(double l)
+void ICnode::setLayer(double l)
 {
 	m_L = l;
 }
@@ -46,23 +46,33 @@ double ICnode::Y() const
 	return m_Y;
 }
 
-double ICnode::W() const
+double ICnode::Width() const
 {
 	return m_W;
 }
 
-double ICnode::P() const
+double ICnode::Power() const
 {
 	return m_P;
 }
 
-double ICnode::H() const
+double ICnode::Height() const
 {
 	return m_H;
 }
 
-double ICnode::L() const
+double ICnode::Layer() const
 {
 	return m_L;
+}
+
+void ICnode::setName(const std::string& n)
+{
+	m_name = n;
+}
+
+std::string ICnode::Name() const
+{
+	return m_name;
 }
 }

@@ -30,6 +30,7 @@ signals:
 	void calculate();
 	void openFile(const QString&);
 	void clear();
+	void depthChange(int);
 
 private slots:
 	void openFileDialog();

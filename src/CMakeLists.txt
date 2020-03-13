@@ -44,7 +44,7 @@ find_package (Qt5Gui)
 #find_package (Qt5Svg)
 #find_package (Qt5Xml)
 
-include_directories(./src/include)
+include_directories(./include)
 
 include_directories(${QT_INCLUDE_DIR}/)
 include_directories(${QT_INCLUDE_DIR}/QtCore)
@@ -54,12 +54,12 @@ include_directories(${QT_INCLUDE_DIR}/QtWidgets)
 include_directories("C:\\Programs\\eigen3\\")
 
 
-add_subdirectory (${PROJECT_SOURCE_DIR}/src/gui)
-add_subdirectory (${PROJECT_SOURCE_DIR}/src/core)
-add_subdirectory (${PROJECT_SOURCE_DIR}/src/parser)
-add_subdirectory (${PROJECT_SOURCE_DIR}/src/QRibbon)
-add_subdirectory (${PROJECT_SOURCE_DIR}/src/rq_plugin/)
+add_subdirectory (${PROJECT_SOURCE_DIR}/gui)
+add_subdirectory (${PROJECT_SOURCE_DIR}/core)
+add_subdirectory (${PROJECT_SOURCE_DIR}/parser)
+add_subdirectory (${PROJECT_SOURCE_DIR}/QRibbon)
+add_subdirectory (${PROJECT_SOURCE_DIR}/rq_plugin/)
 
-add_executable(thermoIC ${PROJECT_SOURCE_DIR}/src/main.cpp )
+add_executable(thermoIC ${PROJECT_SOURCE_DIR}/main.cpp )
 add_dependencies(thermoIC core gui parser QRibbon rq_plugin )
 target_link_libraries (thermoIC core gui parser QRibbon rq_plugin Qt5::Widgets Qt5::Core Qt5::Gui ${LD_AUX})

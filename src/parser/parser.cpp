@@ -11,7 +11,9 @@ std::vector<ICnodePtr> CParser::parse(const std::vector<Token>& tokens)
 
 	while (!isAtEnd())
 	{
-		nodes.push_back(_parse());
+		auto p = _parse();
+		if (p != nullptr)
+			nodes.emplace_back(p);
 	}
 
 	return nodes;
@@ -61,58 +63,71 @@ bool CParser::match(ETokenType type) const
 ICnodePtr CParser::_parse()  const
 {
 	ICnodePtr newNode = std::shared_ptr<ICnode>(new ICnode());
-	if (match(_X) && match(_DELIMITER))
+	while (!match(_EOL) && !isAtEnd())
 	{
-		if (check(_NUMBER))
+		if (match(_NAME) && match(_DELIMITER))
 		{
-			newNode->setX(atof(peek().m_lexeme.c_str()));
-			advance();
+			if (check(_STRING) || check(_NUMBER))
+			{
+				newNode->setName(peek().m_lexeme.c_str());
+				advance();
+			}
 		}
-	}
+		else if (match(_X) && match(_DELIMITER))
+		{
+			if (check(_NUMBER))
+			{
+				newNode->setX(atof(peek().m_lexeme.c_str()));
+				advance();
+			}
+		}
 
-	if (match(_Y) && match(_DELIMITER))
-	{
-		if (check(_NUMBER))
+		else if (match(_WIDTH) && match(_DELIMITER))
 		{
-			newNode->setY(atof(peek().m_lexeme.c_str()));
-			advance();
+			if (check(_NUMBER))
+			{
+				newNode->setWidth(atof(peek().m_lexeme.c_str()));
+				advance();
+			}
 		}
-	}
 
-	if (match(_WIDTH) && match(_DELIMITER))
-	{
-		if (check(_NUMBER))
+		else if (match(_HEIGHT) && match(_DELIMITER))
 		{
-			newNode->setW(atof(peek().m_lexeme.c_str()));
-			advance();
+			if (check(_NUMBER))
+			{
+				newNode->setHeight(atof(peek().m_lexeme.c_str()));
+				advance();
+			}
 		}
-	}
 
-	if (match(_HEIGHT) && match(_DELIMITER))
-	{
-		if (check(_NUMBER))
+		else if (match(_POWER) && match(_DELIMITER))
 		{
-			newNode->setH(atof(peek().m_lexeme.c_str()));
-			advance();
+			if (check(_NUMBER))
+			{
+				newNode->setPower(atof(peek().m_lexeme.c_str()));
+				advance();
+			}
 		}
-	}
 
-	if (match(_POWER) && match(_DELIMITER))
-	{
-		if (check(_NUMBER))
+		else if (match(_Y) && match(_DELIMITER))
 		{
-			newNode->setP(atof(peek().m_lexeme.c_str()));
-			advance();
+			if (check(_NUMBER))
+			{
+				newNode->setY(atof(peek().m_lexeme.c_str()));
+				advance();
+			}
 		}
-	}
 
-	if (match(_LAYER) && match(_DELIMITER))
-	{
-		if (check(_NUMBER))
+		else if (match(_LAYER) && match(_DELIMITER))
 		{
-			newNode->setL(atof(peek().m_lexeme.c_str()));
-			advance();
+			if (check(_NUMBER))
+			{
+				newNode->setLayer(atof(peek().m_lexeme.c_str()));
+				advance();
+			}
 		}
+		else
+			advance();
 	}
 	return newNode;
 }
