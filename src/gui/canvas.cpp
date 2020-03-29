@@ -1,4 +1,5 @@
 #include "canvas.hpp"
+#include "../core/engine.hpp"
 
 #include <QGraphicsRectItem>
 #include <QGraphicsView>
@@ -151,6 +152,16 @@ void Canvas::onCalculate()
 		m_scene->addLine(line2, pen);
 		m_scene->addLine(line3, pen);
 	}
+
+	// calculate Neighors
+	Engine oEngine;
+	oEngine.calculateNeighbors(m_triangles);
+
+	// for debugging
+	// dump into file
+	//oEngine.dumpToTxt(m_triangles);
+
+	// dump netlist
 }
 
 void Canvas::onLoadFile(const QString& file)
