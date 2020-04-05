@@ -26,14 +26,22 @@ public:
 	bool isBounded(CTrianglePtr);
 	std::vector<CTrianglePtr> getNeighbors() const;
 
-
 	void setName(const QString&);
 	QString getName() const;
+
+	void setNode(int, int);
+	int getNode(int) const;
+
+	void setLoad(int, float);
+	float getLoad(int) const;
 
 private:
 	QLineF m_line1;
 	QLineF m_line2;
 	QLineF m_line3;
+
+	int nodesIds[3];
+	float loads[3];
 
 	// for debug
 	QString m_name;

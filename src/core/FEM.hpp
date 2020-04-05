@@ -1,11 +1,8 @@
 #ifndef FEM_HPP
 #define FEM_HPP
-//
-//#include <Eigen/Dense>
-//#include <Eigen/Sparse>
-//#include <string>
-//#include <vector>
+
 //#include <iostream>
+
 //#include <fstream>
 //
 //struct Element

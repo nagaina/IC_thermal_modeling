@@ -123,25 +123,84 @@ void Canvas::onCalculate()
 	pen.setWidth(1);
 	pen.setColor(QColor(Qt::white));
 	auto oBoundingRect = m_scene->itemsBoundingRect();
+
+	int nodeCount = 4;
+	std::vector<float> nodesX, nodesY;
+	std::vector<float> loads{0, 0, 0, 0};
+	nodesX.resize(nodeCount);
+	nodesY.resize(nodeCount);
+
+	auto point1 = oBoundingRect.bottomLeft();
+	auto point2 = oBoundingRect.bottomRight();
+	auto point3 = oBoundingRect.topLeft();
+	auto point4 = oBoundingRect.topRight();
+
+	nodesX[0] = point1.x();
+	nodesY[0] = point1.y();
+
+	nodesX[1] = point2.x();
+	nodesY[1] = point2.y();
+
+	nodesX[2] = point3.x();
+	nodesY[2] = point3.y();
+
+	nodesX[3] = point4.x();
+	nodesY[3] = point4.y();
+
+	int _i = 0;
+	for (auto it : m_scene->items())
+	{
+		auto rect = it->boundingRect();
+		if (rect.contains(point1))
+			loads[0] = m_cells[_i]->Power();
+
+		if (rect.contains(point2))
+			loads[1] = m_cells[_i]->Power();
+
+		if (rect.contains(point3))
+			loads[2] = m_cells[_i]->Power();
+
+		if (rect.contains(point4))
+			loads[3] = m_cells[_i]->Power();
+
+		++_i;
+	}
+
 	//	create two rectangles
 	{
-		QLineF oLine1{oBoundingRect.bottomLeft(), oBoundingRect.bottomRight()};
-		QLineF oLine2{oBoundingRect.topLeft(), oBoundingRect.bottomRight()};
-		QLineF oLine3{oBoundingRect.topLeft(), oBoundingRect.bottomLeft()};
+		QLineF oLine1{point1, point2};
+		QLineF oLine2{point3, point2};
+		QLineF oLine3{point3, point1};
 		auto pTriangle = std::shared_ptr<CTriangle>(new CTriangle(oLine1, oLine2, oLine3));
+		pTriangle->setNode(0, 0);
+		pTriangle->setNode(1, 1);
+		pTriangle->setNode(2, 2);
+		pTriangle->setLoad(0, loads[0]);
+		pTriangle->setLoad(1, loads[1]);
+		pTriangle->setLoad(2, loads[2]);
 		m_triangles.emplace(pTriangle);
 		int depth = 0;
-		cutIntoTriangles(depth, pTriangle);
+		//cutIntoTriangles(depth, pTriangle);
 	}
 	{
-		QLineF oLine1{oBoundingRect.topLeft(), oBoundingRect.topRight()};
-		QLineF oLine2{oBoundingRect.topRight(), oBoundingRect.bottomRight()};
-		QLineF oLine3{oBoundingRect.topLeft(), oBoundingRect.bottomRight()};
+		QLineF oLine1{point3, point4};
+		QLineF oLine2{point4, point2};
+		QLineF oLine3{point3, point2};
 		auto pTriangle = std::shared_ptr<CTriangle>(new CTriangle(oLine1, oLine2, oLine3));
+		pTriangle->setNode(0, 3);
+		pTriangle->setNode(1, 1);
+		pTriangle->setNode(2, 2);
+		pTriangle->setLoad(0, loads[3]);
+		pTriangle->setLoad(1, loads[1]);
+		pTriangle->setLoad(2, loads[2]);
 		m_triangles.emplace(pTriangle);
 		int depth = 0;
-		cutIntoTriangles(depth, pTriangle);
+		//cutIntoTriangles(depth, pTriangle);
 	}
+
+	Engine oEngine;
+	for (auto i = 0; i < m_nMaxDepth; ++i)
+		oEngine.generateMesh(m_triangles, nodeCount, nodesX, nodesY, m_scene->items(), m_cells, oBoundingRect);
 
 	for (auto it : m_triangles)
 	{
@@ -154,7 +213,6 @@ void Canvas::onCalculate()
 	}
 
 	// calculate Neighors
-	Engine oEngine;
 	oEngine.calculateNeighbors(m_triangles);
 
 	// for debugging

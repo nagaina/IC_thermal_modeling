@@ -51,7 +51,7 @@ include_directories(${QT_INCLUDE_DIR}/QtCore)
 include_directories(${QT_INCLUDE_DIR}/QtGui)
 include_directories(${QT_INCLUDE_DIR}/QtCore)
 include_directories(${QT_INCLUDE_DIR}/QtWidgets)
-#include_directories("C:\\Programs\\eigen3\\")
+include_directories("C:\\Programs\\eigen3\\")
 
 
 add_subdirectory (${PROJECT_SOURCE_DIR}/gui)

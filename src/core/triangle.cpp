@@ -204,3 +204,23 @@ QString CTriangle::getName() const
 {
 	return m_name;
 }
+
+void CTriangle::setNode(int i, int id)
+{
+	nodesIds[i] = id;
+}
+
+int CTriangle::getNode(int i) const
+{
+	return nodesIds[i];
+}
+
+void CTriangle::setLoad(int i, float load)
+{
+	loads[i] = load;
+}
+
+float CTriangle::getLoad(int i) const
+{
+	return loads[i];
+}
