@@ -10,6 +10,12 @@ public:
 	void calculateNeighbors(std::unordered_set<CTrianglePtr>&) const;
 
 	void dumpToTxt(const std::unordered_set<CTrianglePtr>&) const;
+
+	void dumpToNetlist(const std::unordered_set<CTrianglePtr>&, QString&);
+
+protected:
+	// helper
+	void dumpDefinedValues(const std::unordered_set<CTrianglePtr>&, QString&);
 };
 
 #endif

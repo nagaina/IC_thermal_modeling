@@ -65,3 +65,46 @@ void Engine::dumpToTxt(const std::unordered_set<CTrianglePtr>& aTriangles) const
 
 	oFile.close();
 }
+
+void Engine::dumpToNetlist(const std::unordered_set<CTrianglePtr>& aTriangles, QString& sNetlist)
+{
+	dumpDefinedValues(aTriangles, sNetlist);
+	
+	// dump cells
+	for (auto it : aTriangles)
+	{
+		sNetlist += "\n";
+		sNetlist += QString("]n* Cell %1 *\n").arg(it->getName());
+
+		// dump I
+		sNetlist += QString(".param i_%1 = %2 \n").arg(it->getName());
+	}
+}
+
+// protected
+void Engine::dumpDefinedValues(const std::unordered_set<CTrianglePtr>& aTriangles, QString& sNetlist)
+{
+	///////////////////////////     Rij       //////////////////////////////////////////
+	const qreal lambda = 0.000233;
+	qreal subThickness = 2.88;
+	qreal h = 23.8;
+	const qreal C = 20.16;
+	const qreal r = 2329;
+
+	qreal S = aTriangles.size(); // count of triangles 
+	// Rij
+	qreal Rij = 1 / (lambda * h);
+	sNetlist += QString(".param Rij = %1\n").arg(Rij);
+
+	// rij
+	qreal rij = 1 / (lambda * subThickness);
+	sNetlist += QString(".param rij = %1\n").arg(rij);
+
+	// Ri
+	qreal Ri = h / (lambda * S);
+	sNetlist += QString(".param Ri = %1\n").arg(Ri);
+
+	// Rsub     
+	qreal Rsub = subThickness / (lambda * S);
+	sNetlist += QString(".param Rsub = %1\n").arg(Rsub);
+}

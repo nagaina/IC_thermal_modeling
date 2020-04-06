@@ -6,6 +6,7 @@
 
 #include <QWidget>
 #include <unordered_set>
+#include <QHBoxLayout>
 
 class QGraphicsView;
 class QGraphicsScene;
@@ -27,16 +28,18 @@ public slots:
 
 private:
 	void mapPointToScale();
-	void cutIntoTriangles(int, CTrianglePtr);
+	void cutIntoTriangles(int, CTrianglePtr, std::unordered_set<CTrianglePtr>&);
 	void drawCells();
+	void createScene();
 
 private:
-	QGraphicsView*							m_view = nullptr;
-	QGraphicsScene*							m_scene = nullptr;
+	QHBoxLayout*							m_lMain;
+	QList<QGraphicsView*>					m_views;
+	QList<QGraphicsScene*>					m_scenes;
 	unsigned								m_id = 0;
 	int										m_size = 1;
 	std::vector<parser::ICnodePtr>			m_cells;
-	std::unordered_set<CTrianglePtr>		m_triangles;
+	QList<std::unordered_set<CTrianglePtr>>	m_lstTriangles;
 	int										m_nMaxDepth = 0;
 };
 
