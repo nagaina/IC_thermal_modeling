@@ -224,3 +224,8 @@ float CTriangle::getLoad(int i) const
 {
 	return loads[i];
 }
+
+float CTriangle::getMidLoad()
+{
+	return (loads[0] + loads[1] + loads[2]) / 3;
+}

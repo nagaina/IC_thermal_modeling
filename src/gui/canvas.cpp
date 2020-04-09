@@ -6,7 +6,7 @@
 #include <QHBoxLayout>
 #include <QtMath>
 #include <QRandomGenerator>
-
+#include <QFile>
 #include <queue>
 static const int POWER = 0;
 
@@ -217,8 +217,14 @@ void Canvas::onCalculate()
 
 	// for debugging
 	// dump into file
-	//oEngine.dumpToTxt(m_triangles);
+	oEngine.dumpToTxt(m_triangles);
+	QString sNet;
+	oEngine.dumpToNetlist(m_triangles, sNet);
 
+	QFile oFile(QStringLiteral("netlist.sp"));
+	oFile.open(QIODevice::WriteOnly);
+	oFile.write(sNet.toLatin1());
+	oFile.close();
 	// dump netlist
 }
 

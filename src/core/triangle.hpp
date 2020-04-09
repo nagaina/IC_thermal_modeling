@@ -35,6 +35,7 @@ public:
 	void setLoad(int, float);
 	float getLoad(int) const;
 
+	float getMidLoad();
 private:
 	QLineF m_line1;
 	QLineF m_line2;
