@@ -56,4 +56,5 @@ void MainWindow::make_connections()
 	connect(m_ribbonBar, SIGNAL(clear()), m_canvas, SLOT(onClear()));
 	connect(m_ribbonBar, SIGNAL(openFile(const QString&)), m_canvas, SLOT(onLoadFile(const QString&)));
 	connect(m_ribbonBar, SIGNAL(depthChange(int)), m_canvas, SLOT(onDepthChange(int)));
+	connect(m_ribbonBar, SIGNAL(loadNetlist()), m_canvas, SLOT(onLoadNetlist()));
 }

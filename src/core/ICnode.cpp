@@ -1,7 +1,5 @@
 #include "ICnode.hpp"
 
-namespace parser
-{
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 //	class ICNode
@@ -74,5 +72,4 @@ void ICnode::setName(const std::string& n)
 std::string ICnode::Name() const
 {
 	return m_name;
-}
 }

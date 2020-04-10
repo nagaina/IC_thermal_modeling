@@ -6,7 +6,7 @@
 // Includes
 //
 #include "token.hpp"
-#include "ICnode.hpp"
+#include "../core/ICnode.hpp"
 
 // Stl
 #include <vector>

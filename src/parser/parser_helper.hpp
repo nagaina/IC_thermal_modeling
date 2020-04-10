@@ -1,7 +1,8 @@
 #ifndef PARSER_HELPER_HPP
 #define PARSER_HELPER_HPP
 
-#include "ICnode.hpp"
+#include "../core/ic.hpp"
+#include "../core/ICnode.hpp"
 #include "scanner.hpp"
 #include "parser.hpp"
 
@@ -16,6 +17,8 @@ public:
 	ParserHelper();
 
 	std::vector<ICnodePtr> parseFile(const std::string&);
+
+	Cic* parseNetlist(const std::string&);
 
 private:
 	CScannerPtr m_scanner = nullptr;

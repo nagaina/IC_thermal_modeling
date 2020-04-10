@@ -14,7 +14,7 @@
 #include <QGraphicsItem>
 
 // Parser
-#include "../parser/ICnode.hpp"
+#include "ICnode.hpp"
 
 class Engine
 {
@@ -24,7 +24,7 @@ public:
 	void dumpToTxt(const std::unordered_set<CTrianglePtr>&) const;
 
 	///	@brief Generates mash using Eigen lib
-	void generateMesh(std::unordered_set<CTrianglePtr>&, int&, std::vector<float>&, std::vector<float>&, QList<QGraphicsItem *> pItems, std::vector<parser::ICnodePtr> cells, QRectF);
+	void generateMesh(std::unordered_set<CTrianglePtr>&, int&, std::vector<float>&, std::vector<float>&, QList<QGraphicsItem *> pItems, std::vector<ICnodePtr> cells, QRectF);
 
 	void dumpToNetlist(const std::unordered_set<CTrianglePtr>&, QString&);
 

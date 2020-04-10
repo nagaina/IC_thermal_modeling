@@ -67,7 +67,7 @@ void Engine::dumpToTxt(const std::unordered_set<CTrianglePtr>& aTriangles) const
 	oFile.close();
 }
 
-void Engine::generateMesh(std::unordered_set<CTrianglePtr>& aTriangles, int& nodeCount, std::vector<float>& nodeX, std::vector<float>& nodeY, QList<QGraphicsItem *> pItems, std::vector<parser::ICnodePtr> cells, QRectF oFixedBoundar)
+void Engine::generateMesh(std::unordered_set<CTrianglePtr>& aTriangles, int& nodeCount, std::vector<float>& nodeX, std::vector<float>& nodeY, QList<QGraphicsItem *> pItems, std::vector<ICnodePtr> cells, QRectF oFixedBoundar)
 {
 	float poissonRatio, youngModulus; // material properties
 
@@ -220,24 +220,26 @@ void Engine::generateMesh(std::unordered_set<CTrianglePtr>& aTriangles, int& nod
 		point4 = QPointF {x, y};
 		nodeX.push_back(x);
 		nodeY.push_back(y);
-		int _i = 0;
+		int __i = 0;
 		std::vector<float> loads{0, 0, 0, 0};
 		for (auto it : pItems)
 		{
+			if (__i >= cells.size())
+				break;
 			auto rect = it->boundingRect();
 			if (rect.contains(point1))
-				loads[0] = cells[_i]->Power();
+				loads[0] = cells[__i]->Power();
 
 			if (rect.contains(point2))
-				loads[1] = cells[_i]->Power();
+				loads[1] = cells[__i]->Power();
 
 			if (rect.contains(point3))
-				loads[2] = cells[_i]->Power();
+				loads[2] = cells[__i]->Power();
 			
 			if (rect.contains(point4))
-				loads[3] = cells[_i]->Power();
+				loads[3] = cells[__i]->Power();
 
-			++_i;
+			++__i;
 		}
 
 		{

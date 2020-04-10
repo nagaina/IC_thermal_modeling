@@ -59,7 +59,7 @@ void ApplicationRibbonGui::buildHomePage(QRibbonWidget* ribbonWidget)
 	QRibbonButton* calculate = new QRibbonButton(this, "Calculate", getIconDir() + "calculate.svg");
 	connect(calculate, SIGNAL(clicked()), this, SIGNAL(calculate()));
 	QRibbonButton* load = new QRibbonButton(this, "Load", getIconDir() + "upload.svg");
-	//connect(load, SIGNAL(clicked()), this, SIGNAL(calculate()));
+	connect(load, SIGNAL(clicked()), this, SIGNAL(loadNetlist()));
 	QRibbonButton* clear = new QRibbonButton(this, "Clear", getIconDir() + "delete.svg");
 	connect(clear, SIGNAL(clicked()), this, SIGNAL(clear()));
 	group->addRibbonButton(open);

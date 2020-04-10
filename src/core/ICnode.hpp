@@ -8,8 +8,6 @@
 #include <memory>
 #include <string>
 
-namespace parser
-{
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 //	class ICNode
@@ -51,5 +49,4 @@ private:
 };
 
 using ICnodePtr = std::shared_ptr<ICnode>;
-}
 #endif

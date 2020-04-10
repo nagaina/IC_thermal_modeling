@@ -31,6 +31,7 @@ signals:
 	void openFile(const QString&);
 	void clear();
 	void depthChange(int);
+	void loadNetlist();
 
 private slots:
 	void openFileDialog();
