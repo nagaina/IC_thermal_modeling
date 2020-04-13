@@ -42,6 +42,7 @@ find_package (Qt5Widgets)
 find_package (Qt5Core)
 find_package (Qt5Gui)
 find_package (Qt5DataVisualization)
+find_package (Qt5Charts)
 #find_package (Qt5Svg)
 #find_package (Qt5Xml)
 
@@ -53,6 +54,7 @@ include_directories(${QT_INCLUDE_DIR}/QtGui)
 include_directories(${QT_INCLUDE_DIR}/QtCore)
 include_directories(${QT_INCLUDE_DIR}/QtWidgets)
 include_directories(${QT_INCLUDE_DIR}/Qt5DataVisualization/)
+include_directories(${QT_INCLUDE_DIR}/Qt5Charts/)
 include_directories("C:\\Programs\\eigen3\\")
 
 
@@ -64,4 +66,4 @@ add_subdirectory (${PROJECT_SOURCE_DIR}/rq_plugin/)
 
 add_executable(thermoIC ${PROJECT_SOURCE_DIR}/main.cpp )
 add_dependencies(thermoIC core gui parser QRibbon rq_plugin )
-target_link_libraries (thermoIC core gui parser QRibbon rq_plugin Qt5::Widgets Qt5::Core Qt5::Gui  Qt5::DataVisualization ${LD_AUX})
+target_link_libraries (thermoIC core gui parser QRibbon rq_plugin Qt5::Widgets Qt5::Core Qt5::Gui Qt5::Charts Qt5::DataVisualization ${LD_AUX})

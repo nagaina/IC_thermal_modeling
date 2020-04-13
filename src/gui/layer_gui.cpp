@@ -134,3 +134,8 @@ void CLayersGallery::setMaxIterCount(int n)
 	for (auto it : m_layers)
 		it->setMaxInterCount(n);
 }
+
+CCellGui* CLayersGallery::getLayer(int i)
+{
+	return m_layers[i];
+}

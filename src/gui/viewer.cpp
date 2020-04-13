@@ -130,7 +130,7 @@ void viewer_3d::fill_data(CLayer* l)
 	for (unsigned i = 0; i < l->height(); ++i)
 	{
 		QSurfaceDataRow *newRow = new QSurfaceDataRow;
-		for (unsigned j = 0; j < l->width(); ++j)
+	/*	for (unsigned j = 0; j < l->width(); ++j)
 		{
 			double v = l->get_cell_value(i, j);
 			if (max_value < v)
@@ -139,7 +139,7 @@ void viewer_3d::fill_data(CLayer* l)
 			}
 			(*newRow) << QVector3D(j, v, i);
 	}
-		*dataArray << newRow;
+		*dataArray << newRow;*/
 	}
 	std::cout << dataArray->size() << std::endl;
 
@@ -155,7 +155,7 @@ void viewer_3d::fill_data(CLayer* l)
 
 	m_surface->axisZ()->setRange(0, l->height() - 1);
 	m_surface->axisY()->setRange(0, max_value);
-	m_surface->axisX()->setRange(0, l->width() - 1);
+	//m_surface->axisX()->setRange(0, l->width() - 1);
 
 	m_surface->axisX()->setLabelAutoRotation(30);
 	m_surface->axisY()->setLabelAutoRotation(90);

@@ -11,28 +11,24 @@
 
 class CLayer
 {
-	 using cells = std::vector<std::vector<ICnodePtr>>;
+	 using cells = std::vector<ICnodePtr>;
 
 public:
-	CLayer(unsigned id, unsigned width, unsigned height);
+	CLayer(unsigned id, unsigned height);
 	virtual ~CLayer() = default;
 
 public:
 	unsigned id() const;
-	unsigned width() const;
 	unsigned height() const;
 
-	void set_cell_value(unsigned r, unsigned c, double v);
-    double get_cell_value(unsigned r, unsigned c);
-    void set_cell_value_1(unsigned r, unsigned c, double v);
-    double get_cell_value_1(unsigned r, unsigned c);
+	void set_cell_value(unsigned r, double v);
+    double get_cell_value(unsigned r);
 
 public:
 	void dump(QString&) const;
 
 private:
 	unsigned m_id;
-	unsigned m_width;
 	unsigned m_height;
 
 private:

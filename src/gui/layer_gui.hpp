@@ -28,6 +28,7 @@ public:
 	void calculate();
 	void setMaxIterCount(int);
 
+	CCellGui* getLayer(int);
 private:
     void add_layers(const std::vector<ICnodePtr>&);
     void cleanup_layers();

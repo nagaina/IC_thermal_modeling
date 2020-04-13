@@ -229,3 +229,23 @@ float CTriangle::getMidLoad()
 {
 	return (loads[0] + loads[1] + loads[2]) / 3;
 }
+
+void CTriangle::setLayer(int n)
+{
+	m_layer = n;
+}
+
+int CTriangle::getLayer() const
+{
+	return m_layer;
+}
+
+void CTriangle::setLoad(double l)
+{
+	m_calcLoad = l;
+}
+
+double CTriangle::getLoad() const
+{
+	return m_calcLoad;
+}

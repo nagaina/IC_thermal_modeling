@@ -335,8 +335,8 @@ void CCellGui::dump_cells(std::string& netlist)
 void CCellGui::calculate()
 {
 	m_triangles.clear();
-	//m_scene->clear();
-	//drawCells();
+	m_scene->clear();
+	fillData(m_cells);
 
 	QPen pen;
 	pen.setStyle(Qt::SolidLine);
@@ -370,9 +370,6 @@ void CCellGui::calculate()
 	int _i = 0;
 	for (auto it : m_scene->items())
 	{
-		if (_i >= m_cells.size())
-			break;
-
 		auto rect = it->boundingRect();
 		if (rect.contains(point1))
 			loads[0] = m_cells[_i]->Power();
@@ -389,6 +386,8 @@ void CCellGui::calculate()
 		++_i;
 	}
 
+	Engine oEngine;
+
 	//	create two rectangles
 	{
 		QLineF oLine1{point1, point2};
@@ -403,7 +402,7 @@ void CCellGui::calculate()
 		pTriangle->setLoad(2, loads[2]);
 		m_triangles.emplace(pTriangle);
 		int depth = 0;
-		//cutIntoTriangles(depth, pTriangle);
+		oEngine.cutIntoTriangles(depth, pTriangle, m_nMaxDepth, m_triangles, m_scene->items(), m_cells);
 	}
 	{
 		QLineF oLine1{point3, point4};
@@ -418,12 +417,14 @@ void CCellGui::calculate()
 		pTriangle->setLoad(2, loads[2]);
 		m_triangles.emplace(pTriangle);
 		int depth = 0;
-		//cutIntoTriangles(depth, pTriangle);
+		oEngine.cutIntoTriangles(depth, pTriangle, m_nMaxDepth, m_triangles, m_scene->items(), m_cells);
 	}
 
-	Engine oEngine;
-	for (auto i = 0; i < m_nMaxDepth; ++i)
-		oEngine.generateMesh(m_triangles, nodeCount, nodesX, nodesY, m_scene->items(), m_cells, oBoundingRect);
+	//for (auto i = 0; i < m_nMaxDepth; ++i)
+		//oEngine.generateMesh(m_triangles, nodeCount, nodesX, nodesY, m_scene->items(), m_cells, oBoundingRect);
+
+	for (auto it : m_triangles)
+		it->setLayer(m_id - 1);
 
 	for (auto it : m_triangles)
 	{
@@ -455,4 +456,52 @@ void CCellGui::calculate()
 void CCellGui::setMaxInterCount(int n)
 {
 	m_nMaxDepth = n;
+}
+
+std::unordered_set<CTrianglePtr> CCellGui::getMesh() const
+{
+	return m_triangles;
+}
+
+void CCellGui::initMesh(const std::unordered_set<CTrianglePtr>& pTriangles)
+{
+	m_triangles = pTriangles;
+
+	int nMax = 0, nMin = 0.1;
+
+	for (auto it : m_triangles)
+	{
+		auto v = it->getLoad();
+		if (nMax < v)
+			nMax = v;
+	}
+
+	QPen pen;
+	pen.setStyle(Qt::SolidLine);
+	pen.setWidth(1);
+	pen.setColor(QColor(Qt::black));
+
+	for (auto it : m_triangles)
+	{
+		QBrush oRedBrush, oYellowBrush, oGreenBrush;
+		oRedBrush.setColor(Qt::red);
+		oRedBrush.setStyle(Qt::SolidPattern);
+		oYellowBrush.setColor(Qt::yellow);
+		oYellowBrush.setStyle(Qt::SolidPattern);
+		oGreenBrush.setColor(Qt::green);
+		oGreenBrush.setStyle(Qt::SolidPattern);
+		auto line1 = it->getLine1();
+		auto line2 = it->getLine2();
+		auto line3 = it->getLine3();
+		QPolygonF oPolygon;
+		auto v = it->getLoad();
+		double range = v / nMax;
+		oPolygon << line1.p1() << line1.p2() << line2.p1() << line2.p2() << line3.p1() << line3.p2();
+		if (range < 0.3)
+			m_scene->addPolygon(oPolygon, pen, oGreenBrush);
+		if (range >= 0.3 && range <= 0.8)
+			m_scene->addPolygon(oPolygon, pen, oYellowBrush);
+		if (range > 0.8)
+			m_scene->addPolygon(oPolygon, pen, oRedBrush);
+	}
 }

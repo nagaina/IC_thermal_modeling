@@ -1,5 +1,6 @@
 #include "thermal_gallery.hpp"
 #include "viewer.hpp"
+#include "chart_gallery.hpp"
 
 #include <../core/ic.hpp>
 #include <../core/layer.hpp>
@@ -8,7 +9,7 @@
 
 #include <cassert>
 
-thermal_gallery::thermal_gallery(Cic* ic, QRectF bRect, int itStep,  QWidget *parent) : QWidget(parent)
+thermal_gallery::thermal_gallery(Cic* ic, QRectF bRect, int itStep,  QWidget *parent, CLayersGallery* pGallery) : QWidget(parent)
 {
     assert(ic != 0);
     QVBoxLayout* layout = new QVBoxLayout;
@@ -24,17 +25,19 @@ thermal_gallery::thermal_gallery(Cic* ic, QRectF bRect, int itStep,  QWidget *pa
     QRectF cbRect(bRect.topLeft()-distPoint, bRect.bottomRight()+distPoint);
     qreal factor =( cbRect.height()*cbRect.width())/(itStep*itStep);
     for (int i = 0; i < ic->layersCount(); ++i) {
-        viewer_3d* tw = new viewer_3d(this);
+		CChartGallery* pChart = new CChartGallery(this);
+        //viewer_3d* tw = new viewer_3d(this);
         CLayer* l = ic->getLayer(i);
-        assert(l != 0);
+		auto pLayer = pGallery->getLayer(i);
+		assert(pLayer != nullptr);
+        assert(l != nullptr);
         for (unsigned i = 0; i < l->height(); ++i) {
-            for (unsigned j = 0; j < l->width(); ++j) {
-                l->set_cell_value(i, j, l->get_cell_value(i, j));
-            }
+			l->set_cell_value(i, l->get_cell_value(i) *100/factor); // ? 
         }
-        tw->fill_data(l);
-        tw->set_gradient(gr);
-        m_layers.push_back(tw);
+		pChart->addLayer(l, pLayer->getMesh());
+        //tw->fill_data(l);
+        //tw->set_gradient(gr);
+        m_layers.push_back(pChart);
     }
 
 

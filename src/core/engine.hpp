@@ -28,6 +28,8 @@ public:
 
 	void dumpToNetlist(const std::unordered_set<CTrianglePtr>&, QString&);
 
+	void cutIntoTriangles(int, CTrianglePtr, int, std::unordered_set<CTrianglePtr>&, QList<QGraphicsItem *> pItems, std::vector<ICnodePtr> cells) const;
+
 protected:
 	// helper
 	void dumpDefinedValues(const std::unordered_set<CTrianglePtr>&, QString&);

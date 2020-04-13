@@ -39,12 +39,12 @@ public:
 	std::string Name() const;
 
 private:
-	double m_X;
-	double m_Y;
-	double m_W;
-	double m_H;
-	double m_P;
-	double m_L;
+	double m_X = 0;
+	double m_Y = 0;
+	double m_W = 0;
+	double m_H = 0;
+	double m_P = 0;
+	double m_L = 0;
 	std::string m_name;
 };
 

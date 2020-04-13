@@ -3,17 +3,19 @@
 
 #include <QWidget>
 
-class viewer_3d;
+class CChartGallery;
 class Cic;
+
+#include "layer_gui.hpp"
 
 class thermal_gallery : public QWidget
 {
     Q_OBJECT
 public:
-    explicit thermal_gallery(Cic*, QRectF, int, QWidget *parent = nullptr);
+    explicit thermal_gallery(Cic*, QRectF, int, QWidget *parent = nullptr, CLayersGallery* = nullptr);
 
 private:
-    using layers = QList<viewer_3d*>;
+    using layers = QList<CChartGallery*>;
 
 private:
     layers m_layers = {};

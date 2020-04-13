@@ -159,13 +159,10 @@ Cic* ParserHelper::parseNetlist(const std::string& fn)
         if ( data.startsWith('*') ) {
             continue;
         }
-        if ( data.startsWith('.') ) {
-            continue;
-        }
 
-        int idx = data.indexOf("_c");
+        int idx = data.indexOf("c");
         if ( idx == -1 ) {
-            //continue;
+            continue;
         }
         idx += 2;
 		idx = 0;
@@ -212,7 +209,7 @@ Cic* ParserHelper::parseNetlist(const std::string& fn)
         assert(la != 0);
         //std::cout<<r<<std::endl;
         //std::cout<<c<<std::endl;
-        la->set_cell_value(r, c, temp);
+        la->set_cell_value(c, temp);
 //        temp_map[indexs(r, c, l)] = temp;
 //        tempMap.insert(Iidx, temp); TODO
     }

@@ -2,6 +2,8 @@
 
 #include <unordered_map>
 #include <iostream>
+#include <queue>
+#include <QRandomGenerator>
 
 #include <QFile>
 
@@ -176,7 +178,7 @@ void Engine::generateMesh(std::unordered_set<CTrianglePtr>& aTriangles, int& nod
 	ApplyConstraints(globalK, constraints);
 
 	// Solve
-	Eigen::SimplicialLDLT<Eigen::SparseMatrix<float> > solver(globalK);
+	Eigen::SimplicialLDLT<Eigen::SparseMatrix<float>, 0> solver(globalK);
 
 	Eigen::VectorXf displacements = solver.solve(loads);
 
@@ -224,8 +226,6 @@ void Engine::generateMesh(std::unordered_set<CTrianglePtr>& aTriangles, int& nod
 		std::vector<float> loads{0, 0, 0, 0};
 		for (auto it : pItems)
 		{
-			if (__i >= cells.size())
-				break;
 			auto rect = it->boundingRect();
 			if (rect.contains(point1))
 				loads[0] = cells[__i]->Power();
@@ -371,25 +371,34 @@ void Engine::dumpToNetlist(const std::unordered_set<CTrianglePtr>& aTriangles, Q
 	dumpDefinedValues(aTriangles, sNetlist);
 
 	// dump cells
+	// dump cells
 	for (auto it : aTriangles)
 	{
 		sNetlist += "\n";
-		sNetlist += QString("\n* Cell %1 *\n").arg(it->getName());
+		sNetlist += QString("\n* Cell %1 %2 *\n").arg(it->getName()).arg(it->getLayer());
 
 		// dump I
-		sNetlist += QString(".param i_%1_layer =%3 \n").arg(it->getName()).arg(it->getMidLoad());
-		sNetlist += QString("i%1_layer vdd c_%1 dc = i_%1_layer ac = 0 \n").arg(it->getName());
+		sNetlist += QString(".param i_%1_%2 =%3 \n").arg(it->getName()).arg(it->getLayer()).arg(it->getMidLoad());
+		sNetlist += QString("i%1_%2 vdd c_%1_%2 dc = i_%1_%2 ac = 0 \n").arg(it->getName()).arg(it->getLayer());
 
 		// dump R
-		sNetlist += QString("rR_%1 c_%1 c_%1_s R=Ri \n").arg(it->getName());
+		sNetlist += QString("rR_%1_%2 c_%1_%2 c_%1_%2_s R=Ri \n").arg(it->getName()).arg(it->getLayer());
+
+		// dump Rs
+		//sNetlist += QString("rRs_%1_%2 c_%1_%2 c_%1_%2_s R=Rsub \n").arg(it->getName()).arg(it->getLayer());
+
+		// dump Rs
+		sNetlist += QString("rRs_%1_%2 c_%1_%2_s vss R=Rsub \n").arg(it->getName()).arg(it->getLayer());
+
 
 		// dump for neighbors
 		for (auto itN : it->getNeighbors())
 		{
-			sNetlist += QString("rR_%1_%2 c_%1 c_%1_%2 R=Rij \n").arg(it->getName()).arg(itN->getName());
+			sNetlist += QString("rR_%1_%3_%2_%3 c_%1_%3 c_%2_%3 R=Rij \n").arg(it->getName()).arg(itN->getName()).arg(it->getLayer());
+			sNetlist += QString("rr_s_%1_%3_%2_%3 c_%1_%3_s c_%2_%3_s R=rij \n").arg(it->getName()).arg(itN->getName()).arg(it->getLayer());
 		}
 	}
-
+       
 	sNetlist += QString("\n.option post probe\n");
 	sNetlist += QString("\n.global gnd");
 	sNetlist += QString("\n.probe v(*) i(*)");
@@ -423,4 +432,114 @@ void Engine::dumpDefinedValues(const std::unordered_set<CTrianglePtr>& aTriangle
 	// Rsub     
 	qreal Rsub = subThickness / (lambda * S);
 	sNetlist += QString(".param Rsub = %1\n").arg(Rsub);
+}
+
+void Engine::cutIntoTriangles(int depth, CTrianglePtr pT, int nMaxDepth, std::unordered_set<CTrianglePtr>& aTriangles, QList<QGraphicsItem *> pItems, std::vector<ICnodePtr> cells) const
+{
+	std::queue<CTrianglePtr> triangles;
+	triangles.push(pT);
+
+	while (depth < nMaxDepth && !triangles.empty())
+	{
+		++depth;
+		auto pTriangle = triangles.front();
+		triangles.pop();
+
+		//	remove current triangle
+		aTriangles.extract(pTriangle);
+
+		// randomly choose to cup this one or not
+		auto oMaxEdge = pTriangle->getBiggestLine();
+		// get two other lines
+		auto line1 = pTriangle->getLine1();
+		if (line1 == oMaxEdge)
+			line1 = pTriangle->getLine3();
+		auto line2 = pTriangle->getLine2();
+		if (line2 == oMaxEdge)
+			line2 = pTriangle->getLine3();
+
+		QPointF oRandIntersection;
+
+		// covert to int with rounding
+		int n1 = qRound(oMaxEdge.x1() + 0.05);
+		int n2 = qRound(oMaxEdge.x2() + 0.05);
+		// find random point in the biggest line
+		if (n1 != n2)
+		{
+			//auto p = (oMaxEdge.x1() + oMaxEdge.x2()) / 2;
+			auto oXMax = qMax(oMaxEdge.x1(), oMaxEdge.x2());
+			auto oXMin = qMin(oMaxEdge.x1(), oMaxEdge.x2());
+			auto per = (oXMax - oXMin) / 4;
+			double p = QRandomGenerator::global()->bounded(qRound(oXMin + per), qRound(oXMax - per));
+			if (int(p) == n1)
+				p = (oMaxEdge.x1() + oMaxEdge.x2()) / 2;
+			if (int(p) == n2)
+				p = (oMaxEdge.x1() + oMaxEdge.x2()) / 2;
+			auto oYMax = qMax(oMaxEdge.y2(), oMaxEdge.y1());
+			auto oYMin = qMin(oMaxEdge.y1(), oMaxEdge.y2());
+			oMaxEdge.intersect(QLineF(p, oYMin, p, oYMax * 2), &oRandIntersection);
+		}
+		else
+		{
+			//auto p = (oMaxEdge.y1() + oMaxEdge.y2()) /2;
+			auto oXMax = qMax(oMaxEdge.y1(), oMaxEdge.y2());
+			auto oXMin = qMin(oMaxEdge.y1(), oMaxEdge.y2());
+			auto per = (oXMax - oXMin) / 4;
+			double p = QRandomGenerator::global()->bounded(qRound(oXMin + per), qRound(oXMax - per));
+			auto oYMin = qMin(oMaxEdge.x1(), oMaxEdge.x2());
+			oMaxEdge.intersect(QLineF(oYMin, p, oYMin * 2, p), &oRandIntersection);
+		}
+
+		//	find intersection of line1 and line2
+		QPointF oPoint1, oPoint2, oPoint3;
+		line1.intersect(line2, &oPoint1);
+
+		// create 3rd line
+		QLineF oLine3{oPoint1, oRandIntersection};
+
+		//	find intersacion of line1 and oMaxEdge
+		line1.intersect(oMaxEdge, &oPoint2);
+
+		QLineF oNewLine1{oPoint2, oRandIntersection};
+
+		// cretae second rectangle
+		line2.intersect(oMaxEdge, &oPoint3);
+		QLineF oNewLine2{oPoint3, oRandIntersection};
+
+		// assign loads
+		std::vector<float> loads{0, 0, 0, 0};
+		int _i = 0;
+		for (auto it : pItems)
+		{
+			auto rect = it->boundingRect();
+			if (rect.contains(oPoint1))
+				loads[0] = cells[_i]->Power();
+
+			if (rect.contains(oPoint2))
+				loads[1] = cells[_i]->Power();
+
+			if (rect.contains(oPoint3))
+				loads[2] = cells[_i]->Power();
+
+			if (rect.contains(oRandIntersection))
+				loads[3] = cells[_i]->Power();
+
+			++_i;
+		}
+
+		CTrianglePtr oPtr1 = std::shared_ptr<CTriangle>(new CTriangle(line1, oLine3, oNewLine1));
+		oPtr1->setLoad(0, loads[0]);
+		oPtr1->setLoad(1, loads[1]);
+		oPtr1->setLoad(2, loads[3]);
+		aTriangles.emplace(oPtr1);
+
+		CTrianglePtr oPtr2 = std::shared_ptr<CTriangle>(new CTriangle(line2, oLine3, oNewLine2));
+		oPtr1->setLoad(0, loads[1]);
+		oPtr1->setLoad(1, loads[2]);
+		oPtr1->setLoad(2, loads[3]);
+		aTriangles.emplace(oPtr2);
+
+		triangles.push(oPtr1);
+		triangles.push(oPtr2);
+	}
 }

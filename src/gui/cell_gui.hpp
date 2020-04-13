@@ -23,6 +23,8 @@ public:
     const QGraphicsScene* getScene() const;
     void dumpNetlist(QString&);
     CLayer* getLayer(int, int = 20);
+	std::unordered_set<CTrianglePtr> getMesh() const;
+	void initMesh(const std::unordered_set<CTrianglePtr>&);
 
 public:
     void fit();

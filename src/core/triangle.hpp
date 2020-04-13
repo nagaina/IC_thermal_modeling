@@ -36,17 +36,27 @@ public:
 	float getLoad(int) const;
 
 	float getMidLoad();
+
+	void setLayer(int);
+	int getLayer() const;
+
+	void setLoad(double);
+	double getLoad() const;
+
 private:
 	QLineF m_line1;
 	QLineF m_line2;
 	QLineF m_line3;
 
 	int nodesIds[3];
-	float loads[3];
+	float loads[3] = {0.1};
+
+	double m_calcLoad = 0;
 
 	// for debug
 	QString m_name;
 
+	int m_layer = 0;
 	// keep the neigbor triangles for dumping into the file
 	std::vector<CTrianglePtr> m_neighbors;
 };
