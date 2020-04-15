@@ -15,7 +15,7 @@ Cic::Cic(const CLayers& aLayers)
 	//std::cout << "IC" << std::endl;
 }
 
-Cic::Cic(unsigned l, unsigned w, unsigned h)
+Cic::Cic(unsigned l, unsigned h)
 {
 	for (unsigned i = 0; i < l; ++i)
 	{

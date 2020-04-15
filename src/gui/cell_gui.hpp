@@ -25,6 +25,7 @@ public:
     CLayer* getLayer(int, int = 20);
 	std::unordered_set<CTrianglePtr> getMesh() const;
 	void initMesh(const std::unordered_set<CTrianglePtr>&);
+	int getTriangleCount() const;
 
 public:
     void fit();
@@ -32,8 +33,7 @@ public:
 	void setMaxInterCount(int);
 
 private:
-    void dump_defined_values(std::string&);
-    void dump_cells(std::string&);
+    void dump_cells(QString&);
 
 private:
     QGraphicsView* m_view = 0;

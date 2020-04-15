@@ -169,53 +169,7 @@ const QGraphicsScene* CCellGui::getScene() const
 
 void CCellGui::dumpNetlist(QString& netlist)
 {
-	//if (m_id == 0)
-	//{
-	//	dump_defined_values(netlist);
-	//}
-	//dump_cells(netlist);
-}
-
-void CCellGui::dump_defined_values(std::string& netlist)
-{
-	scene* sc = static_cast<scene*>(m_scene);
-	assert(sc != 0);
-	int step = sc->get_grid_size();
-
-	///////////////////////////     Rij       //////////////////////////////////////////
-	const qreal lambda = 0.000233;
-	qreal subThickness = 2.88;
-	qreal h = 23.8;
-	const qreal C = 20.16;
-	const qreal r = 2329;
-
-	qreal S = qPow(step, 2);
-	qreal Rij = 1 / (lambda * h);
-	netlist += QString(".param Rij = %1\n").arg(Rij).toStdString();
-
-	///////////////////////////     rij       //////////////////////////////////////////
-	S = step * subThickness;
-	qreal rij = 1 / (lambda * subThickness);
-	netlist += QString(".param rij = %1\n").arg(rij).toStdString();
-
-	///////////////////////////     Ri       //////////////////////////////////////////
-	S = qPow(step, 2);
-	qreal Ri = h / (lambda * S);
-
-	netlist += QString(".param Ri = %1\n").arg(Ri).toStdString();
-
-	///////////////////////////     Rsub       //////////////////////////////////////////
-	S = qPow(step, 2);
-	qreal Rsub = subThickness / (lambda * S);
-
-	netlist += QString(".param Rsub = %1\n").arg(Rsub).toStdString();
-
-	///////////////////////////     Ci       //////////////////////////////////////////
-	S = qPow(step, 2);
-	qreal Ci = C * r*S*h;
-	Ci = 600; //forced
-
-	netlist += QString(".param Ci = %1p\n").arg(Ci).toStdString();
+	dump_cells(netlist);
 }
 
 CLayer* CCellGui::getLayer(int itStep, int offset)
@@ -321,15 +275,33 @@ CLayer* CCellGui::getLayer(int itStep, int offset)
 
 }
 
-void CCellGui::dump_cells(std::string& netlist)
+void CCellGui::dump_cells(QString& sNetlist)
 {
-	/*cene* sc = static_cast<scene*>(m_scene);
-	assert(sc != 0);
+	sNetlist += QString("\n**************** Layer %1 ****************\n").arg(m_id);
 
-	core::layer* layer = get_layer(sc->get_grid_size());
-	assert(layer != 0);
-	layer->dump(netlist);
-	delete layer;*/
+	// dump cells
+	for (auto it : m_triangles)
+	{
+		sNetlist += QString("\n* Cell %1 %2 *\n").arg(it->getName()).arg(it->getLayer());
+
+		// dump I
+		sNetlist += QString(".param i_%1_%2 =%3 \n").arg(it->getName()).arg(it->getLayer()).arg(it->getMidLoad());
+		sNetlist += QString("i%1_%2 vdd c_%1_%2 dc = i_%1_%2 ac = 0 \n").arg(it->getName()).arg(it->getLayer());
+
+		// dump R
+		sNetlist += QString("rR_%1_%2 c_%1_%2 c_%1_%2_s R=Ri \n").arg(it->getName()).arg(it->getLayer());
+
+		// dump Rs
+		sNetlist += QString("rRs_%1_%2 c_%1_%2_s vss R=Rsub \n").arg(it->getName()).arg(it->getLayer());
+
+
+		// dump for neighbors
+		for (auto itN : it->getNeighbors())
+		{
+			sNetlist += QString("rR_%1_%3_%2_%3 c_%1_%3 c_%2_%3 R=Rij \n").arg(it->getName()).arg(itN->getName()).arg(it->getLayer());
+			sNetlist += QString("rr_s_%1_%3_%2_%3 c_%1_%3_s c_%2_%3_s R=rij \n").arg(it->getName()).arg(itN->getName()).arg(it->getLayer());
+		}
+	}
 }
 
 void CCellGui::calculate()
@@ -424,7 +396,7 @@ void CCellGui::calculate()
 		//oEngine.generateMesh(m_triangles, nodeCount, nodesX, nodesY, m_scene->items(), m_cells, oBoundingRect);
 
 	for (auto it : m_triangles)
-		it->setLayer(m_id - 1);
+		it->setLayer(m_id);
 
 	for (auto it : m_triangles)
 	{
@@ -442,14 +414,7 @@ void CCellGui::calculate()
 	// for debugging
 	// dump into file
 	oEngine.dumpToTxt(m_triangles);
-	QString sNet;
-	oEngine.dumpToNetlist(m_triangles, sNet);
 
-	// dump netlist
-	QFile oFile(QStringLiteral("netlist.sp"));
-	oFile.open(QIODevice::WriteOnly);
-	oFile.write(sNet.toLatin1());
-	oFile.close();
 	update();
 }
 
@@ -504,4 +469,9 @@ void CCellGui::initMesh(const std::unordered_set<CTrianglePtr>& pTriangles)
 		if (range > 0.8)
 			m_scene->addPolygon(oPolygon, pen, oRedBrush);
 	}
+}
+
+int CCellGui::getTriangleCount() const
+{
+	return m_triangles.size();
 }

@@ -361,79 +361,8 @@ void Engine::ApplyConstraints(Eigen::SparseMatrix<float>& K, const std::vector<C
 		}
 	}
 }
-void Engine::dumpToNetlist(const std::unordered_set<CTrianglePtr>& aTriangles, QString& sNetlist)
-{
-	sNetlist = QString("\n\n.prot \n.lib '/remote/u/tigrangs/hspice/saed32nm.lib' TT \n.unprot \n \n");
-	sNetlist += QString(".temp 25 \n");
-	sNetlist += QString("vvdd vdd gnd dc = 1.2 \n");
-	sNetlist += QString("vvss vss gnd dc = 0.0 \n");
-
-	dumpDefinedValues(aTriangles, sNetlist);
-
-	// dump cells
-	// dump cells
-	for (auto it : aTriangles)
-	{
-		sNetlist += "\n";
-		sNetlist += QString("\n* Cell %1 %2 *\n").arg(it->getName()).arg(it->getLayer());
-
-		// dump I
-		sNetlist += QString(".param i_%1_%2 =%3 \n").arg(it->getName()).arg(it->getLayer()).arg(it->getMidLoad());
-		sNetlist += QString("i%1_%2 vdd c_%1_%2 dc = i_%1_%2 ac = 0 \n").arg(it->getName()).arg(it->getLayer());
-
-		// dump R
-		sNetlist += QString("rR_%1_%2 c_%1_%2 c_%1_%2_s R=Ri \n").arg(it->getName()).arg(it->getLayer());
-
-		// dump Rs
-		//sNetlist += QString("rRs_%1_%2 c_%1_%2 c_%1_%2_s R=Rsub \n").arg(it->getName()).arg(it->getLayer());
-
-		// dump Rs
-		sNetlist += QString("rRs_%1_%2 c_%1_%2_s vss R=Rsub \n").arg(it->getName()).arg(it->getLayer());
-
-
-		// dump for neighbors
-		for (auto itN : it->getNeighbors())
-		{
-			sNetlist += QString("rR_%1_%3_%2_%3 c_%1_%3 c_%2_%3 R=Rij \n").arg(it->getName()).arg(itN->getName()).arg(it->getLayer());
-			sNetlist += QString("rr_s_%1_%3_%2_%3 c_%1_%3_s c_%2_%3_s R=rij \n").arg(it->getName()).arg(itN->getName()).arg(it->getLayer());
-		}
-	}
-       
-	sNetlist += QString("\n.option post probe\n");
-	sNetlist += QString("\n.global gnd");
-	sNetlist += QString("\n.probe v(*) i(*)");
-	sNetlist += QString("\n.tran 0.01u 1u");
-	sNetlist += QString("\n.end\n");
-}
 
 // protected
-void Engine::dumpDefinedValues(const std::unordered_set<CTrianglePtr>& aTriangles, QString& sNetlist)
-{
-	///////////////////////////     Rij       //////////////////////////////////////////
-	const qreal lambda = 0.000233;
-	qreal subThickness = 2.88;
-	qreal h = 23.8;
-	const qreal C = 20.16;
-	const qreal r = 2329;
-
-	qreal S = aTriangles.size(); // count of triangles 
-	// Rij
-	qreal Rij = 1 / (lambda * h);
-	sNetlist += QString(".param Rij = %1\n").arg(Rij);
-
-	// rij
-	qreal rij = 1 / (lambda * subThickness);
-	sNetlist += QString(".param rij = %1\n").arg(rij);
-
-	// Ri
-	qreal Ri = h / (lambda * S);
-	sNetlist += QString(".param Ri = %1\n").arg(Ri);
-
-	// Rsub     
-	qreal Rsub = subThickness / (lambda * S);
-	sNetlist += QString(".param Rsub = %1\n").arg(Rsub);
-}
-
 void Engine::cutIntoTriangles(int depth, CTrianglePtr pT, int nMaxDepth, std::unordered_set<CTrianglePtr>& aTriangles, QList<QGraphicsItem *> pItems, std::vector<ICnodePtr> cells) const
 {
 	std::queue<CTrianglePtr> triangles;

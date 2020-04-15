@@ -15,7 +15,7 @@ public:
 
 public:
 	Cic(const CLayers&);
-	Cic(unsigned l, unsigned w, unsigned h);
+	Cic(unsigned l, unsigned h);
 	~Cic();
 
 public:

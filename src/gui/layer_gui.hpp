@@ -26,6 +26,7 @@ public:
     void fit();
 
 	void calculate();
+	void generateSpice(QString&);
 	void setMaxIterCount(int);
 
 	CCellGui* getLayer(int);
@@ -33,6 +34,8 @@ private:
     void add_layers(const std::vector<ICnodePtr>&);
     void cleanup_layers();
     void layout_layers();
+
+	void dumpDefinedValues(QString&);
 
 private:
     using layers = QList<CCellGui*>;

@@ -90,7 +90,7 @@ Cic* ParserHelper::parseNetlist(const std::string& fn)
 			index.push_back("0");
         r = index[0].toUInt();
         c = index[1].toUInt();
-        l = 0;
+        l = index[1].toUInt();
         if (maxR < r) {
             maxR = r;
         }
@@ -128,7 +128,7 @@ Cic* ParserHelper::parseNetlist(const std::string& fn)
 
     file.close();
 
-    Cic* ic = new Cic(maxL + 1, maxC + 1, maxR + 1);
+    Cic* ic = new Cic(maxL + 1, maxR + 1);
 
 /*    for (map::iterator i = temp_map.begin(); i != temp_map.end(); ++i) {
         core::layer* l = ic->get_layer(i->first.level);
@@ -160,10 +160,14 @@ Cic* ParserHelper::parseNetlist(const std::string& fn)
             continue;
         }
 
-        int idx = data.indexOf("c");
-        if ( idx == -1 ) {
-            continue;
-        }
+		int idx = data.indexOf("gmindc");
+		if (idx > -1)
+			continue;
+
+		idx = data.indexOf("c");
+		if (idx == -1) {
+			continue;
+		}
         idx += 2;
 		idx = 0;
 
@@ -181,7 +185,7 @@ Cic* ParserHelper::parseNetlist(const std::string& fn)
 			index.push_back("0");
         r = index[0].toUInt();
         c = index[1].toUInt();
-        //l = index[3].toUInt();
+        l = index[2].toUInt();
         QString baStr = parts[2];
         qreal temp;
         /// mikro

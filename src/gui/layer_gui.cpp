@@ -85,7 +85,6 @@ QString CLayersGallery::dumpNetlist()
     // TODO
     QString content;
     content += "***********************************************************************\n";
-    content += "*******************Created by ic_modeling tool ************************\n";
     content += "***********************************************************************\n\n\n";
     content += ".prot\n";
     content += ".lib '/remote/u/tigrangs/hspice/saed32nm.lib' TT\n";
@@ -94,10 +93,16 @@ QString CLayersGallery::dumpNetlist()
     content += "vvdd vdd gnd dc = 1.2\n";
     content += "vvss vss gnd dc = 0.0\n";
     content += "***********************************************************************\n";
-    foreach (auto l, m_layers) {
+  
+	// dump defined values
+	dumpDefinedValues(content);
+
+	//  dump each
+	foreach (auto l, m_layers) {
         assert(l != 0);
         l->dumpNetlist(content);
     }
+
     content += "\n\n.option post probe\n\n";
     content += ".global gnd\n";
     content += ".probe v(*) i(*)\n";
@@ -129,6 +134,11 @@ void CLayersGallery::calculate()
 		it->calculate();
 }
 
+void CLayersGallery::generateSpice(QString& sNet)
+{
+	sNet += dumpNetlist();
+}
+
 void CLayersGallery::setMaxIterCount(int n)
 {
 	for (auto it : m_layers)
@@ -138,4 +148,37 @@ void CLayersGallery::setMaxIterCount(int n)
 CCellGui* CLayersGallery::getLayer(int i)
 {
 	return m_layers[i];
+}
+
+void CLayersGallery::dumpDefinedValues(QString& sNetlist)
+{
+	// calc triangle count
+	int nTrCnt = 0;
+	for (auto it : m_layers)
+		nTrCnt += it->getTriangleCount();
+
+	///////////////////////////     Rij       //////////////////////////////////////////
+	const qreal lambda = 0.000233;
+	qreal subThickness = 2.88;
+	qreal h = 23.8;
+	const qreal C = 20.16;
+	const qreal r = 2329;
+
+	qreal S = nTrCnt; // count of triangles 
+	// Rij
+	qreal Rij = 1 / (lambda * h);
+	sNetlist += QString(".param Rij = %1\n").arg(Rij);
+
+	// rij
+	qreal rij = 1 / (lambda * subThickness);
+	sNetlist += QString(".param rij = %1\n").arg(rij);
+
+	// Ri
+	qreal Ri = h / (lambda * S);
+	sNetlist += QString(".param Ri = %1\n").arg(Ri);
+
+	// Rsub     
+	qreal Rsub = subThickness / (lambda * S);
+	sNetlist += QString(".param Rsub = %1\n").arg(Rsub);
+
 }

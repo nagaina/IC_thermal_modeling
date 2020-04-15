@@ -26,13 +26,7 @@ public:
 	///	@brief Generates mash using Eigen lib
 	void generateMesh(std::unordered_set<CTrianglePtr>&, int&, std::vector<float>&, std::vector<float>&, QList<QGraphicsItem *> pItems, std::vector<ICnodePtr> cells, QRectF);
 
-	void dumpToNetlist(const std::unordered_set<CTrianglePtr>&, QString&);
-
 	void cutIntoTriangles(int, CTrianglePtr, int, std::unordered_set<CTrianglePtr>&, QList<QGraphicsItem *> pItems, std::vector<ICnodePtr> cells) const;
-
-protected:
-	// helper
-	void dumpDefinedValues(const std::unordered_set<CTrianglePtr>&, QString&);
 
 private:
 	struct Element

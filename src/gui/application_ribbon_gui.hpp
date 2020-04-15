@@ -28,6 +28,7 @@ public:
 
 signals:
 	void calculate();
+	void spice(const QString&);
 	void openFile(const QString&);
 	void clear();
 	void depthChange(int);
@@ -35,6 +36,7 @@ signals:
 
 private slots:
 	void openFileDialog();
+	void openSaveFileDialog();
 
 private:
 	void buildHomePage(QRibbonWidget*);

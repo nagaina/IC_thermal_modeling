@@ -3,6 +3,7 @@
 
 #include <QHBoxLayout>
 #include <QFileDialog>
+#include <QMessageBox>
 
 Canvas::Canvas(QWidget* p)
 	: QWidget(p)
@@ -23,6 +24,23 @@ void Canvas::mapPointToScale()
 void Canvas::onCalculate()
 {
 	m_pGallery->calculate();
+}
+
+void Canvas::onGenerateSpice(const QString& fileName)
+{
+	QFile file(fileName);
+	if (!file.open(QIODevice::WriteOnly)) {
+		QMessageBox::information(this, tr("Unable to open file"),
+			file.errorString());
+		return;
+	}
+
+	QString sNetlist = QString();
+	m_pGallery->generateSpice(sNetlist);
+
+	file.write(sNetlist.toLatin1());
+	file.close();
+
 }
 
 void Canvas::onLoadFile(const QString& file)

@@ -58,12 +58,15 @@ void ApplicationRibbonGui::buildHomePage(QRibbonWidget* ribbonWidget)
 	connect(open, SIGNAL(clicked()), this, SLOT(openFileDialog()));
 	QRibbonButton* calculate = new QRibbonButton(this, "Calculate", getIconDir() + "calculate.svg");
 	connect(calculate, SIGNAL(clicked()), this, SIGNAL(calculate()));
+	QRibbonButton* spice = new QRibbonButton(this, "Generate", getIconDir() + "spice.svg");
+	connect(spice, SIGNAL(clicked()), this, SLOT(openSaveFileDialog()));
 	QRibbonButton* load = new QRibbonButton(this, "Load", getIconDir() + "upload.svg");
 	connect(load, SIGNAL(clicked()), this, SIGNAL(loadNetlist()));
 	QRibbonButton* clear = new QRibbonButton(this, "Clear", getIconDir() + "delete.svg");
 	connect(clear, SIGNAL(clicked()), this, SIGNAL(clear()));
 	group->addRibbonButton(open);
 	group->addRibbonButton(calculate);
+	group->addRibbonButton(spice);
 	group->addRibbonButton(load);
 	group->addRibbonButton(clear);
 	ribbonWidget->addGroup(group);
@@ -107,4 +110,15 @@ void ApplicationRibbonGui::openFileDialog()
 	}
 }
 
+void ApplicationRibbonGui::openSaveFileDialog()
+{
+	QString fileName = QFileDialog::getSaveFileName(this,
+		tr("Save spice file"), "",
+		tr("Spice (*.sp);;All Files (*)"));
+
+	if (fileName.isEmpty())
+		return;
+
+	emit spice(fileName);
+}
 

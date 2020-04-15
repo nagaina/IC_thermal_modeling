@@ -22,6 +22,7 @@ public:
 	
 public slots:
 	void onCalculate();
+	void onGenerateSpice(const QString&);
 	void onLoadFile(const QString&);
 	void onClear();
 	void onDepthChange(int);
