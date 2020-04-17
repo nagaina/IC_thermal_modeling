@@ -591,7 +591,8 @@ void CCellGui::initMesh(const std::unordered_set<CTrianglePtr>& pTriangles)
 			oGr.setColorAt(0.4, oClr2);
 			oGr.setColorAt(0.7, oClr3);
 		}
-		m_scene->addPolygon(oPolygon, pen, oGr);
+		auto pItem = m_scene->addPolygon(oPolygon, pen, oGr);
+		pItem->setToolTip(QString::number(it->getMidLoad(), 'f', 5));
 	}
 }
 
