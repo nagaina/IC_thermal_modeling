@@ -42,11 +42,13 @@ void CChartGallery::addLayer(CLayer* pLayer, std::unordered_set<CTrianglePtr>& p
 	}
 
 
-	QLinearGradient gr(QPointF(nMin, 0), QPointF(0, nMax - 10));
+	QLinearGradient gr;
+	gr.setStart(QPointF(0, 0));
+    gr.setFinalStop(QPointF(0, 1));
     gr.setColorAt(0, Qt::red);
-    gr.setColorAt(0.8, Qt::red);
-    gr.setColorAt(0.9, Qt::yellow);
-    gr.setColorAt(1, Qt::green);
+    gr.setColorAt(0.4, Qt::yellow);
+    gr.setColorAt(0.7, Qt::green);
+	gr.setCoordinateMode(QGradient::StretchToDeviceMode);
 	QPen pen;
 	pen.setWidth(2);
 	pen.setBrush(gr);

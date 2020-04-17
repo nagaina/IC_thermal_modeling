@@ -432,7 +432,7 @@ void CCellGui::initMesh(const std::unordered_set<CTrianglePtr>& pTriangles)
 {
 	m_triangles = pTriangles;
 
-	int nMax = 0, nMin = 0.1;
+	double nMax = 0.1, nMin = 0.1;
 
 	for (auto it : m_triangles)
 	{
@@ -445,29 +445,153 @@ void CCellGui::initMesh(const std::unordered_set<CTrianglePtr>& pTriangles)
 	pen.setStyle(Qt::SolidLine);
 	pen.setWidth(1);
 	pen.setColor(QColor(Qt::black));
+	QBrush oRedBrush, oYellowBrush, oGreenBrush;
+	oRedBrush.setColor(Qt::red);
+	oRedBrush.setStyle(Qt::SolidPattern);
+	oYellowBrush.setColor(Qt::yellow);
+	oYellowBrush.setStyle(Qt::SolidPattern);
+	oGreenBrush.setColor(Qt::green);
+	oGreenBrush.setStyle(Qt::SolidPattern);
 
-	for (auto it : m_triangles)
+	QColor oGreen(Qt::green);
+	QColor oRed(Qt::red);
+	QColor oYellow(Qt::yellow);
+
+	// assing color to each traingle
+	for (auto& it : m_triangles)
 	{
-		QBrush oRedBrush, oYellowBrush, oGreenBrush;
-		oRedBrush.setColor(Qt::red);
-		oRedBrush.setStyle(Qt::SolidPattern);
-		oYellowBrush.setColor(Qt::yellow);
-		oYellowBrush.setStyle(Qt::SolidPattern);
-		oGreenBrush.setColor(Qt::green);
-		oGreenBrush.setStyle(Qt::SolidPattern);
+		auto v = it->getLoad();
+		double range = v / nMax;
+		if (range < 0.4)
+			it->setColor(oGreen);
+			//m_scene->addPolygon(oPolygon, pen, oGreenBrush);
+		if (range >= 0.4 && range <= 0.7)
+			it->setColor(oYellow);
+			//m_scene->addPolygon(oPolygon, pen, oYellowBrush);
+		if (range > 0.7)
+			it->setColor(oRed);
+			//m_scene->addPolygon(oPolygon, pen, oRedBrush);
+	}
+
+	// make colors gradient
+	for (auto& it : m_triangles)
+	{
 		auto line1 = it->getLine1();
 		auto line2 = it->getLine2();
 		auto line3 = it->getLine3();
 		QPolygonF oPolygon;
-		auto v = it->getLoad();
-		double range = v / nMax;
-		oPolygon << line1.p1() << line1.p2() << line2.p1() << line2.p2() << line3.p1() << line3.p2();
-		if (range < 0.3)
-			m_scene->addPolygon(oPolygon, pen, oGreenBrush);
-		if (range >= 0.3 && range <= 0.8)
-			m_scene->addPolygon(oPolygon, pen, oYellowBrush);
-		if (range > 0.8)
-			m_scene->addPolygon(oPolygon, pen, oRedBrush);
+		QPointF p1, p2, p3, oMin, oMax;
+		p1 = line1.p1();
+		p2 = line2.p2();
+		if (line2.p1() != p1 && line2.p1() != p2)
+			p3 = line2.p1();
+		if (line2.p2() != p1 && line2.p2() != p2)
+			p3 = line2.p2();
+		if (line3.p1() != p1 && line3.p1() != p2)
+			p3 = line3.p1();
+		if (line3.p2() != p1 && line3.p2() != p2)
+			p3 = line3.p2();
+		oMin = p1;
+		if (oMin.x() > p2.x())
+			oMin = p2;
+		if (oMin.x() > p3.x())
+			oMin = p3;
+		oMax = p1;
+		if (oMax.x() < p2.x())
+			oMax = p2;
+		if (oMax.x() < p3.x())
+			oMax = p3;
+		oPolygon << p1 << p2 << p3;
+		auto oNei = it->getNeighbors();
+		QColor oClr1, oClr2, oClr3;
+		bool bClr1Min = false, bClr1Max = false, bClr2Min = false, bClr2Max = false, bClr3Min = false, bClr3Max = false;
+		for (auto i : oNei)
+		{
+			if (i->isCornerPoint(p1))
+			{
+				oClr1 = i->getColor();
+				if (oMax == p1)
+					bClr1Max = true;
+				if (oMin == p1)
+					bClr1Min = true;
+			}
+			if (i->isCornerPoint(p2))
+			{
+				oClr2 = i->getColor();
+				if (oMax == p2)
+					bClr2Max = true;
+				if (oMin == p2)
+					bClr2Min = true;
+			}
+			if (i->isCornerPoint(p3))
+			{
+				oClr3 = i->getColor();
+				if (oMax == p3)
+					bClr3Max = true;
+				if (oMin == p3)
+					bClr3Max = true;
+			}
+		}
+
+		if (!oClr1.isValid())
+			oClr1 = oGreen;
+		if (!oClr2.isValid())
+			oClr2 = oGreen;
+		if (!oClr3.isValid())
+			oClr3 = oGreen;
+		
+		QLinearGradient oGr(oMin, oMax);
+		if (bClr3Max)
+		{
+			oGr.setColorAt(0, oClr3);
+			if (bClr2Min)
+			{
+				oGr.setColorAt(0.7, oClr2);
+				oGr.setColorAt(0.4, oClr1);
+			}
+			else
+			{
+				oGr.setColorAt(0.4, oClr2);
+				oGr.setColorAt(0.7, oClr1);
+			}
+		}
+		else
+		if (bClr2Max)
+		{
+			oGr.setColorAt(0, oClr2);
+			if (bClr1Min)
+			{
+				oGr.setColorAt(0.7, oClr1);
+				oGr.setColorAt(0.4, oClr3);
+			}
+			else
+			{
+				oGr.setColorAt(0.4, oClr1);
+				oGr.setColorAt(0.7, oClr3);
+			}
+		}
+		else
+		if (bClr1Max)
+		{
+			oGr.setColorAt(0, oClr1);
+			if (bClr2Min)
+			{
+				oGr.setColorAt(0.7, oClr2);
+				oGr.setColorAt(0.4, oClr3);
+			}
+			else
+			{
+				oGr.setColorAt(0.4, oClr2);
+				oGr.setColorAt(0.7, oClr3);
+			}
+		}
+		else
+		{
+			oGr.setColorAt(0, oClr1);
+			oGr.setColorAt(0.4, oClr2);
+			oGr.setColorAt(0.7, oClr3);
+		}
+		m_scene->addPolygon(oPolygon, pen, oGr);
 	}
 }
 

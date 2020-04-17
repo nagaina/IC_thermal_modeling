@@ -249,3 +249,21 @@ double CTriangle::getLoad() const
 {
 	return m_calcLoad;
 }
+
+void CTriangle::setColor(const QColor& oClr)
+{
+	m_oColor = oClr;
+}
+
+QColor CTriangle::getColor() const
+{
+	return m_oColor;
+}
+
+bool CTriangle::isCornerPoint(const QPointF& oPoint) const
+{
+	return (m_line1.p1() == oPoint || m_line1.p2() == oPoint ||
+			m_line2.p1() == oPoint || m_line2.p2() == oPoint ||
+			m_line3.p1() == oPoint || m_line3.p2() == oPoint); 
+}
+

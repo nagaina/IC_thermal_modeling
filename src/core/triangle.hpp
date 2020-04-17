@@ -5,6 +5,7 @@
 #include <memory>
 #include <vector>
 #include <QString>
+#include <QColor>
 
 class CTriangle;
 using CTrianglePtr = std::shared_ptr<CTriangle>;
@@ -43,6 +44,10 @@ public:
 	void setLoad(double);
 	double getLoad() const;
 
+	void setColor(const QColor&);
+	QColor getColor() const;
+	
+	bool isCornerPoint(const QPointF&) const;
 private:
 	QLineF m_line1;
 	QLineF m_line2;
@@ -57,6 +62,9 @@ private:
 	QString m_name;
 
 	int m_layer = 0;
+
+	QColor m_oColor;
+
 	// keep the neigbor triangles for dumping into the file
 	std::vector<CTrianglePtr> m_neighbors;
 };
