@@ -46,6 +46,16 @@ QLineF CTriangle::getLine3() const
 	return m_line3;
 }
 
+qreal CTriangle::getArea() const
+{
+	qreal a = m_line1.length();
+	qreal b = m_line2.length();
+	qreal c = m_line3.length();
+
+	qreal tiv = (a + b + c) / 2;
+	return std::sqrt(tiv * (tiv - a) * (tiv - b) * (tiv - c));
+}
+
 void CTriangle::addNeighbor(CTrianglePtr oNeighbor)
 {
 	m_neighbors.emplace_back(oNeighbor);

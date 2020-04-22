@@ -22,6 +22,8 @@ public:
 	QLineF getLine2() const;
 	QLineF getLine3() const;
 
+	qreal getArea() const;
+
 public:
 	void addNeighbor(CTrianglePtr);
 	bool isBounded(CTrianglePtr);

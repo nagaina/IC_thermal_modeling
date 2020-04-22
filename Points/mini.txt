@@ -1,0 +1,10 @@
+name=1; x=0; y=0; width =4; height=5; power=0.5; layer=0; frequency=0.27;
+name=2; x=0; y=5.5;	width =4; height=3; power=0.32; layer=0; frequency=0.15;
+name=3; x=0; y=9;	width =4; height=4; power=0.25; layer=0; frequency=0.26;
+name=4; x=0; y=13.5;  width =4; height=6; power=0.65; layer=0; frequency=0.3;
+name=5; x=0; y=20; width =4; height=2;  power=0.2; layer=0; frequency=0.8;
+name=6; x=4.5; y=0; height =4; width=4;  power=0.2;  layer=0; frequency=0.12;
+name=7; x=4.5; y=4.5; width=4; height =4; power=0.42; layer=0; frequency=0.53;
+name=8; x=4.5; y=9; width=4; height =4; power=0.32; layer=0; frequency=0.21;
+height =4; power=0.82; name=9; 	x=4.5; y=13.5; width=4; layer=0; frequency=0.27;
+name=10; x=4.5; y=18; width=4; height =4; power=0.7; layer=0; frequency=0.32;

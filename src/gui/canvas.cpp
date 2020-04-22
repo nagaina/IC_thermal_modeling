@@ -170,8 +170,8 @@ void Canvas::onLoadNetlist()
     assert(m_pGallery != 0);
     QRectF bRect = m_pGallery->getRect();
     //int itStep = m_gallery->get_grid_size();
-	int itStep = 10;
-    thermal_gallery* tg = new thermal_gallery(ic, bRect, itStep, nullptr, m_pGallery);
+	int itStep = m_pGallery->getLayer(0)->getTriangleCount();
+	thermal_gallery* tg = new thermal_gallery(ic, bRect, itStep, nullptr, m_pGallery);
     tg->show();
 }
 

@@ -141,7 +141,13 @@ void CCellGui::fillData(const std::vector<ICnodePtr>& cells)
 	qreal length = sr.width() < sr.height() ? sr.height() : sr.width();
 	qreal length_factor = length / (blength*1.5);
 
-	//m_view->scale(length_factor, length_factor);
+	// ANI: open only for t2 scheme
+	//static bool b = false;
+	//if (!b)
+	//{
+	//	m_view->scale(length_factor, length_factor);
+	//	b = true;
+	//}
 	m_view->setAlignment(Qt::AlignCenter);
 	//m_view->centerOn(br.center().x(), br.center().y());
 	m_scene->setSceneRect(br);
@@ -288,11 +294,23 @@ void CCellGui::dump_cells(QString& sNetlist)
 		sNetlist += QString(".param i_%1_%2 =%3 \n").arg(it->getName()).arg(it->getLayer()).arg(it->getMidLoad());
 		sNetlist += QString("i%1_%2 vdd c_%1_%2 dc = i_%1_%2 ac = 0 \n").arg(it->getName()).arg(it->getLayer());
 
+		// defined values
+		const qreal lambda = 0.000233;
+		qreal subThickness = 2.88;
+		qreal h = 23.8;
+
+		// calculate area
+		qreal S = it->getArea();
+
+		// Ri and Rsub
+		qreal Ri = h / (lambda * S);
+		qreal Rsub = subThickness / (lambda * S);
+
 		// dump R
-		sNetlist += QString("rR_%1_%2 c_%1_%2 c_%1_%2_s R=Ri \n").arg(it->getName()).arg(it->getLayer());
+		sNetlist += QString("rR_%1_%2 c_%1_%2 c_%1_%2_s R=%3 \n").arg(it->getName()).arg(it->getLayer()).arg(Ri);
 
 		// dump Rs
-		sNetlist += QString("rRs_%1_%2 c_%1_%2_s vss R=Rsub \n").arg(it->getName()).arg(it->getLayer());
+		sNetlist += QString("rRs_%1_%2 c_%1_%2_s vss R=%3 \n").arg(it->getName()).arg(it->getLayer()).arg(Rsub);
 
 
 		// dump for neighbors
@@ -312,7 +330,7 @@ void CCellGui::calculate()
 
 	QPen pen;
 	pen.setStyle(Qt::SolidLine);
-	pen.setWidth(1);
+	pen.setWidth(3);
 	pen.setColor(QColor(Qt::white));
 	auto oBoundingRect = m_scene->itemsBoundingRect();
 
@@ -462,13 +480,13 @@ void CCellGui::initMesh(const std::unordered_set<CTrianglePtr>& pTriangles)
 	{
 		auto v = it->getLoad();
 		double range = v / nMax;
-		if (range < 0.4)
+		if (range < 0.25)
 			it->setColor(oGreen);
 			//m_scene->addPolygon(oPolygon, pen, oGreenBrush);
-		if (range >= 0.4 && range <= 0.7)
+		if (range >= 0.25 && range <= 0.6)
 			it->setColor(oYellow);
 			//m_scene->addPolygon(oPolygon, pen, oYellowBrush);
-		if (range > 0.7)
+		if (range > 0.6)
 			it->setColor(oRed);
 			//m_scene->addPolygon(oPolygon, pen, oRedBrush);
 	}
@@ -546,13 +564,13 @@ void CCellGui::initMesh(const std::unordered_set<CTrianglePtr>& pTriangles)
 			oGr.setColorAt(0, oClr3);
 			if (bClr2Min)
 			{
-				oGr.setColorAt(0.7, oClr2);
-				oGr.setColorAt(0.4, oClr1);
+				oGr.setColorAt(0.6, oClr2);
+				oGr.setColorAt(0.25, oClr1);
 			}
 			else
 			{
-				oGr.setColorAt(0.4, oClr2);
-				oGr.setColorAt(0.7, oClr1);
+				oGr.setColorAt(0.25, oClr2);
+				oGr.setColorAt(0.6, oClr1);
 			}
 		}
 		else
@@ -561,13 +579,13 @@ void CCellGui::initMesh(const std::unordered_set<CTrianglePtr>& pTriangles)
 			oGr.setColorAt(0, oClr2);
 			if (bClr1Min)
 			{
-				oGr.setColorAt(0.7, oClr1);
-				oGr.setColorAt(0.4, oClr3);
+				oGr.setColorAt(0.6, oClr1);
+				oGr.setColorAt(0.25, oClr3);
 			}
 			else
 			{
-				oGr.setColorAt(0.4, oClr1);
-				oGr.setColorAt(0.7, oClr3);
+				oGr.setColorAt(0.25, oClr1);
+				oGr.setColorAt(0.6, oClr3);
 			}
 		}
 		else
@@ -576,24 +594,33 @@ void CCellGui::initMesh(const std::unordered_set<CTrianglePtr>& pTriangles)
 			oGr.setColorAt(0, oClr1);
 			if (bClr2Min)
 			{
-				oGr.setColorAt(0.7, oClr2);
-				oGr.setColorAt(0.4, oClr3);
+				oGr.setColorAt(0.6, oClr2);
+				oGr.setColorAt(0.25, oClr3);
 			}
 			else
 			{
-				oGr.setColorAt(0.4, oClr2);
-				oGr.setColorAt(0.7, oClr3);
+				oGr.setColorAt(0.25, oClr2);
+				oGr.setColorAt(0.6, oClr3);
 			}
 		}
 		else
 		{
 			oGr.setColorAt(0, oClr1);
-			oGr.setColorAt(0.4, oClr2);
-			oGr.setColorAt(0.7, oClr3);
+			oGr.setColorAt(0.25, oClr2);
+			oGr.setColorAt(0.6, oClr3);
 		}
 		auto pItem = m_scene->addPolygon(oPolygon, pen, oGr);
-		pItem->setToolTip(QString::number(it->getMidLoad(), 'f', 5));
+		pItem->setToolTip(QString::number(it->getLoad(), 'f'));
 	}
+
+	// ANI : open only for t2 scheme
+	//QRectF br = m_scene->itemsBoundingRect();
+	//QRectF sr = m_view->contentsRect();
+	//qreal blength = br.width() < br.height() ? br.height() : br.width();
+	//qreal length = sr.width() < sr.height() ? sr.height() : sr.width();
+	//qreal length_factor = length / (blength*1.5);
+	//m_view->scale(length_factor, length_factor);
+
 }
 
 int CCellGui::getTriangleCount() const

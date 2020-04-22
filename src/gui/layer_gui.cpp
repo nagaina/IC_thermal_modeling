@@ -172,13 +172,4 @@ void CLayersGallery::dumpDefinedValues(QString& sNetlist)
 	// rij
 	qreal rij = 1 / (lambda * subThickness);
 	sNetlist += QString(".param rij = %1\n").arg(rij);
-
-	// Ri
-	qreal Ri = h / (lambda * S);
-	sNetlist += QString(".param Ri = %1\n").arg(Ri);
-
-	// Rsub     
-	qreal Rsub = subThickness / (lambda * S);
-	sNetlist += QString(".param Rsub = %1\n").arg(Rsub);
-
 }
