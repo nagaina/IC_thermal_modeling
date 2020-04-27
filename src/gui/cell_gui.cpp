@@ -521,93 +521,206 @@ void CCellGui::initMesh(const std::unordered_set<CTrianglePtr>& pTriangles)
 			oMax = p3;
 		oPolygon << p1 << p2 << p3;
 		auto oNei = it->getNeighbors();
+		auto oLoad = it->getLoad();
+		QLinearGradient oGr(oMin, oMax);
 		QColor oClr1, oClr2, oClr3;
 		bool bClr1Min = false, bClr1Max = false, bClr2Min = false, bClr2Max = false, bClr3Min = false, bClr3Max = false;
 		for (auto i : oNei)
 		{
-			if (i->isCornerPoint(p1))
+			if (oClr1 != oRed)
 			{
-				oClr1 = i->getColor();
-				if (oMax == p1)
-					bClr1Max = true;
-				if (oMin == p1)
-					bClr1Min = true;
+				if (i->isCornerPoint(p1))
+				{
+					auto tmp = oClr1;
+					oClr1 = i->getColor();
+					if (oClr1 == oGreen && tmp == oYellow)
+					{
+						oClr1 = oYellow;
+						continue;
+					}
+					if (oMax == p1)
+						bClr1Max = true;
+					if (oMin == p1)
+						bClr1Min = true;
+				}
 			}
-			if (i->isCornerPoint(p2))
+			if (oClr2 != oRed)
 			{
-				oClr2 = i->getColor();
-				if (oMax == p2)
-					bClr2Max = true;
-				if (oMin == p2)
-					bClr2Min = true;
+				if (i->isCornerPoint(p2))
+				{
+					auto tmp = oClr2;
+					oClr2 = i->getColor();
+					if (oClr2 == oGreen && tmp == oYellow)
+					{
+						oClr2 = oYellow;
+						continue;
+					}
+					if (oMax == p2)
+						bClr2Max = true;
+					if (oMin == p2)
+						bClr2Min = true;
+				}
 			}
-			if (i->isCornerPoint(p3))
-			{
-				oClr3 = i->getColor();
-				if (oMax == p3)
-					bClr3Max = true;
-				if (oMin == p3)
-					bClr3Max = true;
-			}
-		}
 
-		if (!oClr1.isValid())
-			oClr1 = oGreen;
-		if (!oClr2.isValid())
-			oClr2 = oGreen;
-		if (!oClr3.isValid())
-			oClr3 = oGreen;
-		
-		QLinearGradient oGr(oMin, oMax);
-		if (bClr3Max)
-		{
-			oGr.setColorAt(0, oClr3);
-			if (bClr2Min)
+			if (oClr3 != oRed)
 			{
-				oGr.setColorAt(0.6, oClr2);
-				oGr.setColorAt(0.25, oClr1);
-			}
-			else
-			{
-				oGr.setColorAt(0.25, oClr2);
-				oGr.setColorAt(0.6, oClr1);
+				if (i->isCornerPoint(p3))
+				{
+					auto tmp = oClr3;
+					oClr3 = i->getColor();
+					if (oClr3 == oGreen && tmp == oYellow)
+					{
+						oClr3 = oYellow;
+						continue;
+					}
+					if (oMax == p3)
+						bClr3Max = true;
+					if (oMin == p3)
+						bClr3Max = true;
+				}
 			}
 		}
-		else
-		if (bClr2Max)
+		if (oLoad == nMax)
 		{
-			oGr.setColorAt(0, oClr2);
-			if (bClr1Min)
-			{
-				oGr.setColorAt(0.6, oClr1);
-				oGr.setColorAt(0.25, oClr3);
-			}
-			else
-			{
-				oGr.setColorAt(0.25, oClr1);
-				oGr.setColorAt(0.6, oClr3);
-			}
-		}
-		else
-		if (bClr1Max)
-		{
-			oGr.setColorAt(0, oClr1);
-			if (bClr2Min)
-			{
-				oGr.setColorAt(0.6, oClr2);
-				oGr.setColorAt(0.25, oClr3);
-			}
-			else
-			{
-				oGr.setColorAt(0.25, oClr2);
-				oGr.setColorAt(0.6, oClr3);
-			}
+			oGr.setColorAt(0, oRed);
+			oGr.setColorAt(1, oRed);
 		}
 		else
 		{
-			oGr.setColorAt(0, oClr1);
-			oGr.setColorAt(0.25, oClr2);
-			oGr.setColorAt(0.6, oClr3);
+			if (!oClr1.isValid())
+				oClr1 = oGreen;
+			if (!oClr2.isValid())
+				oClr2 = oGreen;
+			if (!oClr3.isValid())
+				oClr3 = oGreen;
+
+			// correct assigned colors by the load
+
+			// keep with red at least one yellow fo gradient
+			auto range = oLoad / nMax;
+			if (range > 0.6)
+			{
+				if (bClr3Max)
+					oClr3 = oRed;
+				if (bClr2Max)
+					oClr2 = oRed;
+				if (bClr1Max)
+					oClr1 = oRed;
+			}
+			if (range > 0.25 && range < 0.6)
+			{
+				if (bClr3Max)
+					oClr3 = oYellow;
+				if (bClr2Max)
+					oClr2 = oYellow;
+				if (bClr1Max)
+					oClr1 = oYellow;
+			}
+			if (range < 0.25)
+			{
+				oClr3 = oGreen;
+				oClr2 = oGreen;
+				oClr1 = oGreen;
+			}
+
+			if (oClr1 == oRed)
+			{
+				if (oClr2 == oGreen && oClr3 == oGreen)
+				{
+					oClr2 = oYellow;
+					oClr3 = oYellow;
+				}
+				else
+				{
+					if (oClr2 == oGreen)
+						oClr2 = oYellow;
+					else if (oClr3 == oGreen)
+						oClr3 = oYellow;
+				}
+			}
+
+			if (oClr2 == oRed)
+			{
+				if (oClr1 == oGreen && oClr3 == oGreen)
+				{
+					oClr1 = oYellow;
+					oClr3 = oYellow;
+				}
+				else
+				{
+					if (oClr1 == oGreen)
+						oClr1 = oYellow;
+					else if (oClr3 == oGreen)
+						oClr3 = oYellow;
+				}
+			}
+
+			if (oClr3 == oRed)
+			{
+				if (oClr2 == oGreen && oClr1 == oGreen)
+				{
+					oClr2 = oYellow;
+					oClr1 = oYellow;
+				}
+				else
+				{
+					if (oClr2 == oGreen)
+						oClr2 = oYellow;
+					else if (oClr1 == oGreen)
+						oClr1 = oYellow;
+				}
+			}
+
+			if (bClr3Max)
+			{
+				oGr.setColorAt(0, oClr3);
+				if (bClr2Min)
+				{
+					oGr.setColorAt(0.6, oClr2);
+					oGr.setColorAt(0.25, oClr1);
+				}
+				else
+				{
+					oGr.setColorAt(0.25, oClr2);
+					oGr.setColorAt(0.6, oClr1);
+				}
+			}
+			else
+				if (bClr2Max)
+				{
+					oGr.setColorAt(0, oClr2);
+					if (bClr1Min)
+					{
+						oGr.setColorAt(0.6, oClr1);
+						oGr.setColorAt(0.25, oClr3);
+					}
+					else
+					{
+						oGr.setColorAt(0.25, oClr1);
+						oGr.setColorAt(0.6, oClr3);
+					}
+				}
+				else
+					if (bClr1Max)
+					{
+						oGr.setColorAt(0, oClr1);
+						if (bClr2Min)
+						{
+							oGr.setColorAt(0.6, oClr2);
+							oGr.setColorAt(0.25, oClr3);
+						}
+						else
+						{
+							oGr.setColorAt(0.25, oClr2);
+							oGr.setColorAt(0.6, oClr3);
+						}
+					}
+					else
+					{
+						oGr.setColorAt(0, oClr1);
+						oGr.setColorAt(0.25, oClr2);
+						oGr.setColorAt(0.6, oClr3);
+					}
 		}
 		auto pItem = m_scene->addPolygon(oPolygon, pen, oGr);
 		pItem->setToolTip(QString::number(it->getLoad(), 'f'));

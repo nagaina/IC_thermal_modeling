@@ -270,10 +270,32 @@ QColor CTriangle::getColor() const
 	return m_oColor;
 }
 
+namespace {
+bool contains(QLineF const& oLine, QPointF const& oPoint)
+{
+	QPointF p1 = oLine.p1();
+	QPointF p2 = oLine.p2();
+	QRectF bbox(p1, p2);
+	if (!bbox.contains(oPoint))
+		// vertical and horizontal case
+		return oPoint.x() == p1.x() || oPoint.x() == p2.x() || oPoint.y() == p1.y() || oPoint.y() == p2.y();
+	float x = (float) (oPoint.x() - p1.x()) / (p2.x() - p1.x());
+	float y = (float) (oPoint.y() - p1.y()) / (p2.y() - p1.y());
+	float out =  x / y  * 100000 / 100000;
+	bool b = out > 0.95 && out < 1.25;
+	if (!b)
+		// vertical and horizontal case
+		return oPoint.x() == p1.x() || oPoint.x() == p2.x() || oPoint.y() == p1.y() || oPoint.y() == p2.y();
+	return b;
+}
+}
+
 bool CTriangle::isCornerPoint(const QPointF& oPoint) const
 {
-	return (m_line1.p1() == oPoint || m_line1.p2() == oPoint ||
-			m_line2.p1() == oPoint || m_line2.p2() == oPoint ||
-			m_line3.p1() == oPoint || m_line3.p2() == oPoint); 
+	//return (m_line1.p1() == oPoint || m_line1.p2() == oPoint ||
+	//		m_line2.p1() == oPoint || m_line2.p2() == oPoint ||
+	//		m_line3.p1() == oPoint || m_line3.p2() == oPoint); 
+	return contains(m_line1, oPoint) || contains(m_line2, oPoint) || contains(m_line2, oPoint);
+	
 }
 
