@@ -128,10 +128,13 @@ Cic* CLayersGallery::getIC()
     return new Cic(layers);
 }
 
-void CLayersGallery::calculate()
+int CLayersGallery::calculate()
 {
+	int nTrCnt = 0;
 	for (auto it : m_layers)
-		it->calculate();
+		nTrCnt = it->calculate();
+
+	return nTrCnt;
 }
 
 void CLayersGallery::generateSpice(QString& sNet)

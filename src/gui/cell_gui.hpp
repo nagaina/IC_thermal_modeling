@@ -29,7 +29,7 @@ public:
 
 public:
     void fit();
-	void calculate();
+	int calculate();
 	void setMaxInterCount(int);
 
 private:

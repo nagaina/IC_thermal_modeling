@@ -1,9 +1,12 @@
 #include "canvas.hpp"
 #include "thermal_gallery.hpp"
 
+#include <chrono>
+
 #include <QHBoxLayout>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QDebug>
 
 Canvas::Canvas(QWidget* p)
 	: QWidget(p)
@@ -23,7 +26,12 @@ void Canvas::mapPointToScale()
 
 void Canvas::onCalculate()
 {
-	m_pGallery->calculate();
+	auto start = std::chrono::steady_clock::now();
+	int nCnt = m_pGallery->calculate();
+	auto end = std::chrono::steady_clock::now();
+
+	std::chrono::duration<double> duration = end - start;
+	qDebug() << "Tr Cnt: " << nCnt << " Time: " << duration.count() << "\n";
 }
 
 void Canvas::onGenerateSpice(const QString& fileName)

@@ -59,6 +59,9 @@ void CChartGallery::addLayer(CLayer* pLayer, std::unordered_set<CTrianglePtr>& p
 	m_pChart->addSeries(series);
 	m_pChart->createDefaultAxes();
 	m_pChart->axes(Qt::Vertical).first()->setRange(nMin, nMax);
+	m_pChart->setTitle("Thermal Map");
+	m_pChart->axisX()->setTitleText("Triangle ID");
+	m_pChart->axisY()->setTitleText("Temperature");
 
 	// color the mesh
 	for (auto it : pTriangles)

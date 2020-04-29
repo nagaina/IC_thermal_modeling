@@ -142,12 +142,12 @@ void CCellGui::fillData(const std::vector<ICnodePtr>& cells)
 	qreal length_factor = length / (blength*1.5);
 
 	// ANI: open only for t2 scheme
-	//static bool b = false;
-	//if (!b)
-	//{
-	//	m_view->scale(length_factor, length_factor);
-	//	b = true;
-	//}
+	static bool b = false;
+	if (!b)
+	{
+		m_view->scale(length_factor, length_factor);
+		b = true;
+	}
 	m_view->setAlignment(Qt::AlignCenter);
 	//m_view->centerOn(br.center().x(), br.center().y());
 	m_scene->setSceneRect(br);
@@ -729,12 +729,12 @@ void CCellGui::initMesh(const std::unordered_set<CTrianglePtr>& pTriangles)
 	}
 
 	// ANI : open only for t2 scheme
-	//QRectF br = m_scene->itemsBoundingRect();
-	//QRectF sr = m_view->contentsRect();
-	//qreal blength = br.width() < br.height() ? br.height() : br.width();
-	//qreal length = sr.width() < sr.height() ? sr.height() : sr.width();
-	//qreal length_factor = length / (blength*1.5);
-	//m_view->scale(length_factor, length_factor);
+	QRectF br = m_scene->itemsBoundingRect();
+	QRectF sr = m_view->contentsRect();
+	qreal blength = br.width() < br.height() ? br.height() : br.width();
+	qreal length = sr.width() < sr.height() ? sr.height() : sr.width();
+	qreal length_factor = length / (blength*1.5);
+	m_view->scale(length_factor, length_factor);
 
 }
 

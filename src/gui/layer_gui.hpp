@@ -25,7 +25,7 @@ public:
 
     void fit();
 
-	void calculate();
+	int calculate();
 	void generateSpice(QString&);
 	void setMaxIterCount(int);
 
